@@ -58,5 +58,7 @@ Pesquisa o vídeo que o usuário pedir pelo Yahoo Vídeos e mostra o link, o tí
 <p><a href="https://www.digitalocean.com/community/tutorials/how-to-build-a-discord-bot-with-node-js-pt">Esse site</a> explica passo-a-passo uma maneira de criar um bot no discord usando javascript.</p>
 <br/>
 <br/>
-<p>Para relatar qualquer problema ou tirar uma dúvida sobre o projeto:<p>
+<p>Obs: É importante que, no arquivo config.JSON, você armazene seu Bot Token, senão o código não funcionará, o site acima também explica como isso funciona</p>
+<br/>
+<br/>
 <p align="right">Meu instagram: <a href="https://www.instagram.com/fontesjoaomanoel/">@fontesjoaomanoel
