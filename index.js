@@ -1,3 +1,4 @@
+//modules
 const Discord = require("discord.js");
 const config = require("./config.json");
 const axios = require('axios');
@@ -13,13 +14,11 @@ const client = new Discord.Client({
   },
  },
 });
-
+//prefixo
 const prefix = "!"
 
 client.once('ready', () => {
-
   console.log('bot logado em '+client.channels.cache.size+" "+'canais de '+client.guilds.cache.size+' servers') 
-
   }); 
  
 
@@ -43,17 +42,19 @@ client.on("message", function(message) {
 
   url: "https://br.search.yahoo.com/search?p="+message.content.substring(5,message.content.length).replace(/ /g, "+")
 }).then((result) =>{
-
+  //cortando o html da página para conseguir apenas os links e imagens necessários
   const found = (result.data.match(/<ol class=" reg searchCenterMiddle">.+<\/ol/))
   const dom = new JSDOM(found)
+  //pegando os resultados da pesquisa - links e imagens
   const searchLink =(dom.window.document.getElementsByTagName('a'))
   const imgFound =(dom.window.document.getElementsByTagName('img'))
+  
   const useless = []
   const resul = []
   const resultext = []
 
 
-  for (var i = 0; i <= searchLink.length-1; i++) {// removendo os links "desnecessários" para sua pesquisa
+  for (var i = 0; i <= searchLink.length-1; i++) { // removendo os links "desnecessários" para sua pesquisa
 
     if(searchLink[i].href.startsWith('https://br.search.yahoo.com/')){
       useless.push(searchLink[i].href)
@@ -170,7 +171,7 @@ client.on("message", function(message) {
             const yt = new JSDOM(result.data)
             const watchInYt = yt.window.document.getElementsByClassName("url")
           
-              const videoEmbed = new Discord.MessageEmbed()
+              const videoEmbed = new Discord.MessageEmbed()//embed personalizada do yt
               .setColor('#FF0000')
               .setAuthor('www.youtube.com','https://logodownload.org/wp-content/uploads/2014/10/youtube-logo-5-2.png' ,'https://www.youtube.com/')
               .setTitle('Resultados da pesquisa:')
@@ -187,7 +188,7 @@ client.on("message", function(message) {
         console.log(error)
         })      
 
-      }else{
+      }else{// se for um video de outro site desconhecido
 
         const videoEmbed = new Discord.MessageEmbed()
         .setColor('#202A54')
