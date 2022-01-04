@@ -6,13 +6,6 @@
         "gl": "br"
 
     },
-    "shopping":{
-        "q": "",
-        "tbm": "shop",
-        "location":"Brazil",
-        "hl": "pt",
-        "gl": "br"
-    },
     "image":{
         "q": "",
         "tbm": "isch",
