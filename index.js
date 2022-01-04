@@ -1,159 +1,176 @@
 //modules
 const Discord = require("discord.js");
 const config = require("./config.json");
+const params = require('./params.json');
+
 const axios = require('axios');
+
 const jsdom = require('jsdom');
-const  {  JSDOM  }  =  jsdom ;
+const { JSDOM } = jsdom;
+
+const SerpApi = require('google-search-results-nodejs');
+const search = new SerpApi.GoogleSearch("5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1");
 
 const client = new Discord.Client({
- presence: {
-  status: 'online',
-  activity: {
-   name: 'Pica-Pau',
-   type: 'WATCHING',
+  presence: {
+    status: 'online',
+    activity: {
+      name: 'Pica-Pau',
+      type: 'WATCHING',
+    },
   },
- },
 });
-//prefixo
-const prefix = "!"
+
 
 client.once('ready', () => {
-  console.log('bot logado em '+client.channels.cache.size+" "+'canais de '+client.guilds.cache.size+' servers') 
-  }); 
- 
+  
+  console.log('bot logado em ' + client.guilds.cache.size + ' servers com ' + client.channels.cache.size + " canais")
 
-client.on("message", function(message) {    
+});
+
+
+client.on("message", function (message) {
   if (message.author.bot) return;
 
-    const errorEmbed = new Discord.MessageEmbed()
-  .setColor('#3C4043')
-  .setTitle('Erro!')
-  .setTimestamp()
+  //mensagem de error automatizada
+  const errorEmbed = new Discord.MessageEmbed()
+    .setColor('#3C4043')
+    .setTitle('Erro!')
+    .setTimestamp()
 
-  const commandBody = message.content.slice(prefix.length);
+  const commandBody = message.content.slice(config.prefix.length);
   const args = commandBody.split(' ');
   const command = args.shift().toLowerCase();
-  const idUrl = message.guild.id
 
 
-    if (command === "src"){
+  if (command === "src") {
 
- const dataSrc = axios({
+    axios({
+      url: "https://br.search.yahoo.com/search?p=" + message.content.substring(5, message.content.length).replace(/ /g, "+")
+    }).then((result) => {
 
-  url: "https://br.search.yahoo.com/search?p="+message.content.substring(5,message.content.length).replace(/ /g, "+")
-}).then((result) =>{
-  //cortando o html da página para conseguir apenas os links e imagens necessários
-  const found = (result.data.match(/<ol class=" reg searchCenterMiddle">.+<\/ol/))
-  const dom = new JSDOM(found)
-  //pegando os resultados da pesquisa - links e imagens
-  const searchLink =(dom.window.document.getElementsByTagName('a'))
-  const imgFound =(dom.window.document.getElementsByTagName('img'))
-  
-  const useless = []
-  const resul = []
-  const resultext = []
+      //cortando o html da página para conseguir apenas os links e imagens necessários
+      const found = (result.data.match(/<ol class=" reg searchCenterMiddle">.+<\/ol/))
+      const dom = new JSDOM(found)
 
+      //pegando os resultados da pesquisa - links e imagens
+      const searchLink = (dom.window.document.getElementsByTagName('a'));
+      const domImg = (dom.window.document.getElementsByTagName('img'));
 
-  for (var i = 0; i <= searchLink.length-1; i++) { // removendo os links "desnecessários" para sua pesquisa
+      let imgFound = [];
+      let imgTxt = [];
 
-    if(searchLink[i].href.startsWith('https://br.search.yahoo.com/')){
-      useless.push(searchLink[i].href)
+      const useless = []
+      const res = []
+      const resText = []
 
-    }else if(searchLink[i].href.startsWith('https://br.images.search.yahoo.com/search')){
-      useless.push(searchLink[i].href)
+      // removendo os links "desnecessários" para sua pesquisa
+      for (var i = 0; i <= searchLink.length - 1; i++) {
 
-    }else if (searchLink[i].href.startsWith('https://br.news.search.yahoo.com/search')){
-      useless.push(searchLink[i].href)
+        if (searchLink[i].href.startsWith('https://br.search.yahoo.com/')) {
+          useless.push(searchLink[i].href)
 
-    }else if (searchLink[i].href.startsWith('https://br.video.search.yahoo.com/search')){
-      useless.push(searchLink[i].href)
+        } else if (searchLink[i].href.startsWith('https://br.images.search.yahoo.com/search')) {
+          useless.push(searchLink[i].href)
 
-      }else if (searchLink[i].href.startsWith('https://cc.bingj.com/cache')){
-      useless.push(searchLink[i].href)
+        } else if (searchLink[i].href.startsWith('https://br.news.search.yahoo.com/search')) {
+          useless.push(searchLink[i].href)
 
-        }else if (searchLink[i].href.startsWith('https://br.ajuda.yahoo.com/')){
-      useless.push(searchLink[i].href)
+        } else if (searchLink[i].href.startsWith('https://br.video.search.yahoo.com/search')) {
+          useless.push(searchLink[i].href)
 
-       }else if (searchLink[i].href.startsWith('https://r.search.yahoo.com/')){
-      useless.push(searchLink[i].href)
+        } else if (searchLink[i].href.startsWith('https://cc.bingj.com/cache')) {
+          useless.push(searchLink[i].href)
 
-         }else if (searchLink[i].href.startsWith('https://esportes.yahoo.com/noticias/')){
-      useless.push(searchLink[i].href)
+        } else if (searchLink[i].href.startsWith('https://br.ajuda.yahoo.com/')) {
+          useless.push(searchLink[i].href)
 
-    }else{
-      resul.push(searchLink[i].href)
-      resultext.push(searchLink[i].text)
-    }
-  }
+        } else if (searchLink[i].href.startsWith('https://r.search.yahoo.com/')) {
+          useless.push(searchLink[i].href)
 
-      for (var i = 0; i <= resultext.length-1; i++) {// caso não tenha um resumo abaixo do link
-        if(resultext[i]===""){
-          resultext.splice(i,1,"-esse site não apresenta nenhum resumo-")
+        } else if (searchLink[i].href.startsWith('https://esportes.yahoo.com/noticias/')) {
+          useless.push(searchLink[i].href)
+
+        } else {
+          res.push(searchLink[i].href)
+          resText.push(searchLink[i].text)
         }
       }
 
-      if(resul[0]===undefined){ //se não for possível achar os links referentes à pesquisa
+      //eliminando os gifs da variavel que armazena as imagens
+      for (let index = 0; index < domImg.length - 1; index++) {
 
-        const searchEmbed = new Discord.MessageEmbed()
-        .setColor('#4B0082')
-        .setTitle('Resultados da pesquisa')
-        .addFields(
-            {name:"erro",value:"não foi possível encontrar resultados para essa pesquisa"},
-         )
-        .setTimestamp()        
+        if (domImg[index].src.startsWith("https://")) {
+          imgFound.push(domImg[index].src)
+          imgTxt.push(domImg[index].title)
+        }
 
-        message.channel.send(searchEmbed);
+      }
 
-      }else{
 
-        if(imgFound.length>=0){//se tiver uma imagem sobre a pesquisa na página em questão
+      // caso não tenha um resumo abaixo do link
+      for (var i = 0; i <= resText.length - 1; i++) {
+        if (resText[i] === "") {
+          resText.splice(i, 1, "esse site não apresenta nenhum resumo")
+        }
+      }
+
+      //se não for possível achar os links referentes à pesquisa
+      if (res[0] === undefined) {
+
+        errorEmbed.addFields(
+          { name: "erro!", value: "não foi possível encontrar resultados para essa pesquisa" },
+        )
+        message.channel.send(errorEmbed);
+
+      } else {
+
+        //se tiver uma imagem sobre a pesquisa na página em questão
+        if (imgFound.length > 0) {
 
           const searchEmbed = new Discord.MessageEmbed()
 
-           .setColor('#4B0082')
-           .setTitle('Resultados da pesquisa')
-           .setDescription('resultados sobre '+message.content.substring(5,message.content.length).replace(/ /g, " "))
-           .addFields(
-              {name: resul[0],value:resultext[0]},
-              {name: resul[1],value:resultext[1]}
-           )
-           .addFields(
-            {name:"imagem sobre "+message.content.substring(5,message.content.length).replace(/ /g, " "),value:imgFound[0].title}
-          )
-           .setImage(imgFound[0].src)
-           .setTimestamp()
-  
-        message.channel.send(searchEmbed);   
-        
-        }else{
+            .setColor('#4B0082')
+            .setTitle('Resultados da pesquisa')
+            .setDescription('resultados sobre ' + message.content.substring(5, message.content.length).replace(/ /g, " "))
+            .addFields(
+              { name: res[0], value: resText[0] },
+              { name: res[1], value: resText[1] }
+            )
+            .addFields(
+              { name: "imagem sobre " + message.content.substring(5, message.content.length).replace(/ /g, " "), value: imgTxt[0] }
+            )
+            .setImage(imgFound[0])
+            .setTimestamp()
 
-      const searchEmbed = new Discord.MessageEmbed()
-        .setColor('#4B0082')
-        .setTitle('Resultados da pesquisa')
-        .setDescription('resultados sobre '+message.content.substring(5,message.content.length).replace(/ /g, " "))
-        .addFields(
-            {name: resul[0],value:resultext[0]},
-            {name: resul[1],value:resultext[1]}
-         )
-        .setTimestamp()
+          message.channel.send(searchEmbed);
+        } else {
 
-      message.channel.send(searchEmbed);   
+          const searchEmbed = new Discord.MessageEmbed()
+            .setColor('#4B0082')
+            .setTitle('Resultados da pesquisa')
+            .setDescription('resultados sobre ' + message.content.substring(5, message.content.length).replace(/ /g, " "))
+            .addFields(
+              { name: res[0], value: resText[0] },
+              { name: res[1], value: resText[1] }
+            )
+            .setTimestamp()
+
+          message.channel.send(searchEmbed);
         }
-      } 
+      }
 
-    }).catch((error) =>{
+    }).catch((error) => {
       console.log(error)
-      })
-
+    })
 
   }
 
-  else if(command === "watch"){
+  else if (command === "watch") {
 
-    const dataWatch = axios({
-
-      url: "https://br.video.search.yahoo.com/search/video;_ylt=A2KLfRhB7upgluUATjPz6Qt.;_ylu=Y29sbwNiZjEEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p="+message.content.substring(7,message.content.length).replace(/ /g, "+")
-    }).then((result) =>{
+     axios({
+      url: "https://br.video.search.yahoo.com/search/video;_ylt=A2KLfRhB7upgluUATjPz6Qt.;_ylu=Y29sbwNiZjEEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=" + message.content.substring(7, message.content.length).replace(/ /g, "+")
+    }).then((result) => {
 
       const videoFound = (result.data.match(/<ol><li class="vr vres">.+<\/ol/))
       const videoDom = new JSDOM(videoFound)
@@ -161,76 +178,126 @@ client.on("message", function(message) {
       const thumb = videoDom.window.document.getElementsByTagName("img")
       const contentTitle = videoDom.window.document.getElementsByTagName("h3")
       const contentTime = videoDom.window.document.getElementsByClassName("v-time")
+      
+      //caso o vídeo for do YouTube
+      if (link[0].href.startsWith("/video/play?p")) { 
 
-      if(link[0].href.startsWith("/video/play?p")){ //caso o vídeo for do YouTube
+        //vai no link do video pelo Yahoo e pega o link do video no YouTube
+         axios({  
+          url: "https://br.video.search.yahoo.com/" + link[0].href
+        }).then((result) => {
+          const yt = new JSDOM(result.data)
+          const watchInYt = yt.window.document.getElementsByClassName("url")
 
-          const dataYt = axios({  //vai no link do video pelo Yahoo e pega o link do video no YouTube
+          //embed personalizada do yt
+          const videoEmbed = new Discord.MessageEmbed()
+            .setColor('#FF0000')
+            .setAuthor('www.youtube.com', 'https://logodownload.org/wp-content/uploads/2014/10/youtube-logo-5-2.png', 'https://www.youtube.com/')
+            .setTitle('Resultados da pesquisa:')
+            .setDescription('video sobre ' + message.content.substring(7, message.content.length).replace(/ /g, " "))
+            .setImage(thumb[0].src)
+            .addFields(
+              { name: contentTitle[0].textContent, value: watchInYt[0].href, inline: true }
+            )
+            .setFooter("duração: " + contentTime[0].textContent)
 
-            url: "https://br.video.search.yahoo.com/"+link[0].href
-          }).then((result) =>{
-            const yt = new JSDOM(result.data)
-            const watchInYt = yt.window.document.getElementsByClassName("url")
-          
-              const videoEmbed = new Discord.MessageEmbed()//embed personalizada do yt
-              .setColor('#FF0000')
-              .setAuthor('www.youtube.com','https://logodownload.org/wp-content/uploads/2014/10/youtube-logo-5-2.png' ,'https://www.youtube.com/')
-              .setTitle('Resultados da pesquisa:')
-              .setDescription('video sobre '+message.content.substring(7,message.content.length).replace(/ /g, " "))
-              .setImage(thumb[0].src)
-              .addFields(
-                {name:contentTitle[0].textContent, value:watchInYt[0].href, inline:true}
-               )
-              .setFooter("duração: "+contentTime[0].textContent)
-    
-            message.channel.send(videoEmbed);
-              
-      }).catch((error) =>{
-        console.log(error)
-        })      
+          message.channel.send(videoEmbed);
 
-      }else{// se for um video de outro site desconhecido
+        }).catch((error) => {
+          console.log(error)
+        })
+
+        // se for um video de outro site desconhecido
+      } else {
 
         const videoEmbed = new Discord.MessageEmbed()
-        .setColor('#202A54')
-        .setAuthor('Site desconhecido')
-        .setTitle('Resultados da pesquisa:')
-        .setDescription('video sobre '+message.content.substring(7,message.content.length).replace(/ /g, " "))
-        .setImage(thumb[0].src)
-        .addFields(
-           {name:contentTitle[0].textContent, value:link[0].href}
-           )
-        .setFooter("informações tiradas inteiramente do Yahoo Vídeos")
-  
-      message.channel.send(videoEmbed);   
-       }
-    
-  }).catch((error) =>{
-    console.log(error)
+          .setColor('#202A54')
+          .setAuthor('Site desconhecido')
+          .setTitle('Resultados da pesquisa:')
+          .setDescription('video sobre ' + message.content.substring(7, message.content.length).replace(/ /g, " "))
+          .setImage(thumb[0].src)
+          .addFields(
+            { name: contentTitle[0].textContent, value: link[0].href }
+          )
+
+        message.channel.send(videoEmbed);
+      }
+
+    }).catch((error) => {
+      console.log(error)
     })
-  
+
   }
 
-  else if(command === "comandos"){
-  const commandEmbed = new Discord.MessageEmbed()
+  else if (command === "google") {
 
-   .setColor('#B35A33')
-   .setTitle('Menu de comandos do Bot Lampião')
-   .setAuthor('João Manoel', null , 'https://github.com/JoaoManoelFontes')
-   .setDescription('todos os comandos do bot aqui')
-   .addFields(
-     {name:"prefix: ",value:"!", inline:true},
-     {name:"library: ", value:"discord.js", inline:true},
-     {name:"version: ", value:"2.5.0", inline:true}
-   )
-   .addFields(
-     {name:'google', value:'O bot retorna um link que redireciona voçê ao google com sua pesquisa' },
-     {name:'src', value:'O bot retorna o primeiro resultado da sua pesquisa de acordo com o search do Yahoo. Obs: Tente fazer uma pesquisa simples para evitar erros'},
-     {name:'watch', value:'O bot retorna o primeiro resultado da sua pesquisa no Yahoo Videos, que geralmente é um vídeo do YouTube, por isso a mensagem personalizada'}
-     )
-   .setTimestamp()
+    params.search.q = message.content.substring(8, message.content.length);
+    params.image.q = message.content.substring(8, message.content.length);
 
-message.channel.send(commandEmbed);
+    //pegando os dados do search do google pela api
+    search.json(params.search, (dataSearch) => {
+
+      //pegando os dados do google images pela api
+      search.json(params.image, (dataImg) => {
+        
+        const [res1, res2] = dataSearch.organic_results;
+        const {images_results} = dataImg;
+
+        const googleEmbed = new Discord.MessageEmbed()
+
+          .setColor('#4285f4')
+          .setTitle('Google - ' + params.search.q)
+          .setURL('https://www.google.com/search?q=' + message.content.substring(7, message.content.length).replace(/ /g, "+"))
+          .setAuthor('Google', 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', 'https://google.com.br')
+          .addFields(
+            { name: "-----------------------------", value: "1-" },
+            { name: res1.title, value: res1.snippet },
+            { name: "Link:", value: res1.link }
+          )
+          .addFields(
+            { name: "-----------------------------", value: "2-" },
+            { name: res2.title, value: res2.snippet },
+            { name: "Link:", value: res2.link }
+          )
+          .addFields(
+            { name: "-----------------------------", value: images_results[0].title }
+          )
+
+          .setImage(images_results[0].thumbnail)
+          .setTimestamp()
+
+        message.channel.send(googleEmbed);
+
+      });
+
+    });
+
   }
+  //menu de comandos
+  else if (command === "comandos") {
+
+    const commandEmbed = new Discord.MessageEmbed()
+
+      .setColor('#B35A33')
+      .setTitle('Menu de comandos do Bot Lampião')
+      .setAuthor('João Manoel', null, 'https://github.com/JoaoManoelFontes')
+      .setDescription('todos os comandos do bot aqui')
+      .addFields(
+        { name: "prefix: ", value: "!", inline: true },
+        { name: "library: ", value: "discord.js", inline: true },
+        { name: "version: ", value: "1.5.0", inline: true }
+      )
+      .addFields(
+        { name: 'google', value: 'Api da serp que retorna os resultados de qualquer pesquisa no google. Apenas 100 pesquisas por mês são permitidas' },
+        { name: 'src', value: 'O bot retorna o primeiro resultado da sua pesquisa de acordo com o search do Yahoo.' },
+        { name: 'watch', value: 'O bot retorna o primeiro resultado da sua pesquisa no Yahoo Videos, que geralmente é um vídeo do YouTube, por isso a mensagem personalizada' }
+      )
+      .setTimestamp()
+
+    message.channel.send(commandEmbed);
+  }
+
+
 
 });
 
