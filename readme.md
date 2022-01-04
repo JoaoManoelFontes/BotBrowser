@@ -69,6 +69,7 @@ Pesquisa o vídeo que o usuário pedir pelo Yahoo Vídeos e mostra o link, o tí
 </dl>
 <dt>Serp Api</dt>
 <dd>Api que retorna dados de pesquisas no google, nesse caso, foi usado apenas os resultados das buscar e das imagens. Além disso, essa interface pode buscar dados do Twitter, YouTube, etc. Porém ao ser usado de forma grátis, só é permitido fazer 100 requisições/mês.</dd>
+</dl>
 <br/>
 <br/>
 <p>O Bot Random foi feito com a library discord.js na versão 12.5.3 .</p>
