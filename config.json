@@ -1,4 +1,5 @@
 {
-    "BOT_TOKEN": "Seu Token aqui!"
+    "BOT_TOKEN": "Seu Token aqui!",
+    "prefix": "!"
 
 }
