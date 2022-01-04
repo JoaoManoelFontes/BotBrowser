@@ -7,19 +7,35 @@
 
 <ul> 
 
-<li>!src</li>
- Pesquisa no yahoo o que o usuário pedir e manda no chat os 2 primeiros resultados junto com um pequeno resumo  e uma imagem sobre o link, todos tirados da página da pesquisa.
+ <li>!google</li>
+  Mostra os primeiros resultados de uma pesquisa no google. Feito com a serp api, que retorna os dados da página de pesquisa.
+ <br/>
+ 
+ <h4>Exemplo:</h4>
+ <ul>
+  <li> !google whatsapp // o Bot vai pesquisar whatsapp no google, vai pegar os links dos 2 primeiros resultados e mandar junto com uma imagem no chat </li>
+  </ul>
+  <h4>Obs:</h4>
+  <ul>
+   <li>Só é permitido fazer 100 pesquisas ao mês.</li>
+  </ul>
 <br/>
-<h4>Obs:</h4>
-<ul>
-<li>Talvez alguns desses links não tenham um resumo ou uma imagem (em ambos os casos o Bot avisará)</li>
-</ul>
 <br/>
 
-<h4>Exemplo:</h4>
-<ul>
-<li> !src github // o Bot vai pesquisar github no yahoo, vai pegar os links dos 2 primeiros resultados e mandar para o usuário </li>
-</ul>
+ 
+ <li>!src</li>
+  Pesquisa no yahoo o que o usuário pedir e manda no chat os 2 primeiros resultados junto com um pequeno resumo  e uma imagem sobre o link, todos tirados da página da pesquisa.   Todos os dados das páginas foram extraídos por mim.
+  <br/>
+  <h4>Obs:</h4>
+  <ul>
+   <li>Talvez alguns desses links não tenham um resumo ou uma imagem (em ambos os casos o Bot avisará)</li>
+  </ul>
+  <br/>
+
+  <h4>Exemplo:</h4>
+  <ul>
+   <li> !src github // o Bot vai pesquisar github no yahoo, vai pegar os links dos 2 primeiros resultados e mandar no chat </li>
+  </ul>
 
 <br/>
 <br/>
@@ -51,6 +67,8 @@ Pesquisa o vídeo que o usuário pedir pelo Yahoo Vídeos e mostra o link, o tí
 <dt>jsdom</dt>
 <dd>Biblioteca que consegue ler html e, consequentemente, criar váriaveis com as informações contidas no html em questão, como por exemplo armazenar os links dos primeiros resultados de uma página em uma variavel, e foi para isso que essa biblioteca foi usada no Bot. </dd>
 </dl>
+<dt>Serp Api</dt>
+<dd>Api que retorna dados de pesquisas no google, nesse caso, foi usado apenas os resultados das buscar e das imagens. Além disso, essa interface pode buscar dados do Twitter, YouTube, etc. Porém ao ser usado de forma grátis, só é permitido fazer 100 requisições/mês.</dd>
 <br/>
 <br/>
 <p>O Bot Random foi feito com a library discord.js na versão 12.5.3 .</p>
