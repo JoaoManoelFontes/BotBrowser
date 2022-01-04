@@ -66,7 +66,6 @@ Pesquisa o vídeo que o usuário pedir pelo Yahoo Vídeos e mostra o link, o tí
 <dd>Foi feita para extrair dados de outras páginas da internet, ou seja, Web Scraping. Usada no Bot Browser para pegar todo o html de uma página </dd>
 <dt>jsdom</dt>
 <dd>Biblioteca que consegue ler html e, consequentemente, criar váriaveis com as informações contidas no html em questão, como por exemplo armazenar os links dos primeiros resultados de uma página em uma variavel, e foi para isso que essa biblioteca foi usada no Bot. </dd>
-</dl>
 <dt>Serp Api</dt>
 <dd>Api que retorna dados de pesquisas no google, nesse caso, foi usado apenas os resultados das buscar e das imagens. Além disso, essa interface pode buscar dados do Twitter, YouTube, etc. Porém ao ser usado de forma grátis, só é permitido fazer 100 requisições/mês.</dd>
 </dl>
