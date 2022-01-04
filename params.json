@@ -1,0 +1,25 @@
+{
+    "search":{
+        "q": "",
+        "location":"Brazil",
+        "hl": "pt",
+        "gl": "br"
+
+    },
+    "shopping":{
+        "q": "",
+        "tbm": "shop",
+        "location":"Brazil",
+        "hl": "pt",
+        "gl": "br"
+    },
+    "image":{
+        "q": "",
+        "tbm": "isch",
+        "ijn":"0",
+        "location":"Brazil",
+        "hl": "pt",
+        "gl": "br"
+    }
+
+}        
