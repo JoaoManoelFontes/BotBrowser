@@ -1,5 +1,6 @@
 //modules
 const Discord = require("discord.js");
+const { Intents, MessageEmbed } = require('discord.js');
 const config = require("./config.json");
 const params = require('./params.json');
 
@@ -11,7 +12,7 @@ const { JSDOM } = jsdom;
 const SerpApi = require('google-search-results-nodejs');
 const search = new SerpApi.GoogleSearch("5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1");
 
-const client = new Discord.Client({
+const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] },{
   presence: {
     status: 'online',
     activity: {
@@ -33,7 +34,7 @@ client.on("message", function (message) {
   if (message.author.bot) return;
 
   //mensagem de error automatizada
-  const errorEmbed = new Discord.MessageEmbed()
+  const errorEmbed = new MessageEmbed()
     .setColor('#3C4043')
     .setTitle('Erro!')
     .setTimestamp()
@@ -121,14 +122,14 @@ client.on("message", function (message) {
         errorEmbed.addFields(
           { name: "erro!", value: "não foi possível encontrar resultados para essa pesquisa" },
         )
-        message.channel.send(errorEmbed);
+        message.channel.send({embeds:[errorEmbed]});
 
       } else {
 
         //se tiver uma imagem sobre a pesquisa na página em questão
         if (imgFound.length > 0) {
 
-          const searchEmbed = new Discord.MessageEmbed()
+          const searchEmbed = new MessageEmbed()
 
             .setColor('#4B0082')
             .setTitle('Resultados da pesquisa')
@@ -143,10 +144,10 @@ client.on("message", function (message) {
             .setImage(imgFound[0])
             .setTimestamp()
 
-          message.channel.send(searchEmbed);
+          message.channel.send({embeds:[searchEmbed]});
         } else {
 
-          const searchEmbed = new Discord.MessageEmbed()
+          const searchEmbed = new MessageEmbed()
             .setColor('#4B0082')
             .setTitle('Resultados da pesquisa')
             .setDescription('resultados sobre ' + message.content.substring(5, message.content.length).replace(/ /g, " "))
@@ -156,7 +157,7 @@ client.on("message", function (message) {
             )
             .setTimestamp()
 
-          message.channel.send(searchEmbed);
+          message.channel.send({embeds:[searchEmbed]});
         }
       }
 
@@ -178,9 +179,15 @@ client.on("message", function (message) {
       const thumb = videoDom.window.document.getElementsByTagName("img")
       const contentTitle = videoDom.window.document.getElementsByTagName("h3")
       const contentTime = videoDom.window.document.getElementsByClassName("v-time")
+      if(contentTitle[0].textContent!=null){ 
+      message.channel.send({embeds:[
+        new MessageEmbed()
+        .addField({name: contentTitle[0].textContent, value: link[0].href})
+      ]})
+      }
       
       //caso o vídeo for do YouTube
-      if (link[0].href.startsWith("/video/play?p")) { 
+      /*if (link[0].href.startsWith("/video/play?p")) { 
 
         //vai no link do video pelo Yahoo e pega o link do video no YouTube
          axios({  
@@ -190,18 +197,16 @@ client.on("message", function (message) {
           const watchInYt = yt.window.document.getElementsByClassName("url")
 
           //embed personalizada do yt
-          const videoEmbed = new Discord.MessageEmbed()
+          const videoEmbed = new MessageEmbed()
             .setColor('#FF0000')
-            .setAuthor('www.youtube.com', 'https://logodownload.org/wp-content/uploads/2014/10/youtube-logo-5-2.png', 'https://www.youtube.com/')
-            .setTitle('Resultados da pesquisa:')
+            .setAuthor({ name: 'Some name', iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })            .setTitle('Resultados da pesquisa:')
             .setDescription('video sobre ' + message.content.substring(7, message.content.length).replace(/ /g, " "))
             .setImage(thumb[0].src)
             .addFields(
               { name: contentTitle[0].textContent, value: watchInYt[0].href, inline: true }
             )
-            .setFooter("duração: " + contentTime[0].textContent)
-
-          message.channel.send(videoEmbed);
+            .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+          message.channel.send({embeds:[videoEmbed]});
 
         }).catch((error) => {
           console.log(error)
@@ -210,7 +215,7 @@ client.on("message", function (message) {
         // se for um video de outro site desconhecido
       } else {
 
-        const videoEmbed = new Discord.MessageEmbed()
+        const videoEmbed = new MessageEmbed()
           .setColor('#202A54')
           .setAuthor('Site desconhecido')
           .setTitle('Resultados da pesquisa:')
@@ -220,8 +225,8 @@ client.on("message", function (message) {
             { name: contentTitle[0].textContent, value: link[0].href }
           )
 
-        message.channel.send(videoEmbed);
-      }
+        message.channel.send({embeds:[videoEmbed]});
+      }*/
 
     }).catch((error) => {
       console.log(error)
@@ -243,7 +248,7 @@ client.on("message", function (message) {
         const [res1, res2] = dataSearch.organic_results;
         const {images_results} = dataImg;
 
-        const googleEmbed = new Discord.MessageEmbed()
+        const googleEmbed = new MessageEmbed()
 
           .setColor('#4285f4')
           .setTitle('Google - ' + params.search.q)
@@ -266,17 +271,40 @@ client.on("message", function (message) {
           .setImage(images_results[0].thumbnail)
           .setTimestamp()
 
-        message.channel.send(googleEmbed);
+        message.channel.send({embeds:[videoEmbed]});
 
       });
 
     });
 
-  }
+  } else if (command === "sort") { //sorteia qualquer quantidade de números, palavras ou pessoas... 
+
+    if (args.length <= 1) { //se o usuário digitar só um item (ou nenhum) e não tiver como sortear 
+        errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite 2 ou mais itens', true)
+        message.channel.send(errorEmbed);
+    } else {
+        const random = getRandomInt(0, args.length)
+        message.reply("o item sorteado é " + args[random])
+
+    }
+
+} else if (command === "prob") { //o bot sorteia a probabilidade de acontecer uma sentença que o usuário digitar
+
+    if (args.length <= 1) {
+        errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
+        message.channel.send({ embeds: [errorEmbed] });
+    } else {
+
+        const probability = getRandomInt(0, 100)
+        message.reply(`chance de ` + probability + `%`)
+
+    }
+
+}
   //menu de comandos
   else if (command === "comandos") {
 
-    const commandEmbed = new Discord.MessageEmbed()
+    const commandEmbed = new MessageEmbed()
 
       .setColor('#B35A33')
       .setTitle('Menu de comandos do Bot Lampião')
@@ -294,7 +322,7 @@ client.on("message", function (message) {
       )
       .setTimestamp()
 
-    message.channel.send(commandEmbed);
+    message.channel.send({embeds:[commandEmbed]});
   }
 
 
