@@ -3,6 +3,7 @@ const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require('discord.js');
 const config = require("./config.json");
 const params = require('./params.json');
+const webScrapper = require('./webScrapper')
 
 const axios = require('axios');
 
@@ -10,6 +11,7 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
 const SerpApi = require('google-search-results-nodejs');
+const { cleanLogs } = require("forever/lib/forever/cli");
 const search = new SerpApi.GoogleSearch("5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1");
 
 const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }, {
@@ -26,7 +28,6 @@ const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAG
 client.once('ready', () => {
 
     console.log('bot logado em ' + client.guilds.cache.size + ' servers com ' + client.channels.cache.size + " canais")
-
 });
 
 
@@ -215,42 +216,26 @@ client.on("messageCreate", function(message) {
 
     } else if (command === "google") {
 
-        params.search.q = message.content.substring(8, message.content.length);
-        params.image.q = message.content.substring(8, message.content.length);
+        const req = message.content.substring(8, message.content.length);
+        message.channel.send({ embeds: [webScrapper.GoogleSearch(req)] });
+        /* new MessageEmbed()
+             .setColor('#4285f4')
+             .setTitle('Google - ' + req)
+             .setURL('https://www.google.com/search?q=' + message.content.substring(7, message.content.length).replace(/ /g, "+"))
+             .setAuthor({ name: 'Google', iconURL: 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', url: 'https://google.com.br' })
+             .addFields({ name: "1-" + res1.title, value: res1.snippet, inline: true }, { name: 'Link:', value: res1.link, inline: true })
+             .addField({ name: '\u200B', value: '\u200B' })
+             .addFields({ name: "2-" + res2.title, value: res2.snippet, inline: true }, { name: " || Link:", value: " || " + res2.link, inline: true })
+             .addField({ name: "-----------------------------", value: images_results[0].title })
+             .setImage(images_results[0].thumbnail)
+             .setTimestamp()*/
 
-        //pegando os dados do search do google pela api
-        search.json(params.search, (dataSearch) => {
-
-            //pegando os dados do google images pela api
-            search.json(params.image, (dataImg) => {
-                const [res1, res2] = dataSearch.organic_results;
-                message.reply(res1.title)
-                const { images_results } = dataImg;
-                /*
-                                    const googleEmbed = new MessageEmbed()
-
-                                    .setColor('#4285f4')
-                                        .setTitle('Google - ' + params.search.q)
-                                        .setURL('https://www.google.com/search?q=' + message.content.substring(7, message.content.length).replace(/ /g, "+"))
-                                        .setAuthor({ name: 'Google', iconURL: 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', url: 'https://google.com.br' })
-                                        .addFields({ name: "1-" + res1.title, value: res1.snippet, inline: true }, { name: 'Link:', value: res1.link, inline: true })
-                                        .addField({ name: '\u200B', value: '\u200B' })
-                                        .addFields({ name: "2-" + res2.title, value: res2.snippet, inline: true }, { name: " || Link:", value: " || " + res2.link, inline: true })
-                                        .addField({ name: "-----------------------------", value: images_results[0].title })
-                                        .setImage(images_results[0].thumbnail)
-                                        .setTimestamp()
-
-                                    message.channel.send({ embeds: [googleEmbed] });
-                                    */
-            });
-
-        });
 
     } else if (command === "sort") { //sorteia qualquer quantidade de números, palavras ou pessoas... 
 
         if (args.length <= 1) { //se o usuário digitar só um item (ou nenhum) e não tiver como sortear 
             errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite 2 ou mais itens', true)
-            message.channel.send(errorEmbed);
+            message.channel.send({ embeds: [errorEmbed] });
         } else {
             const random = getRandomInt(0, args.length)
             message.reply("o item sorteado é " + args[random])
