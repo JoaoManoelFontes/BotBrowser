@@ -203,7 +203,7 @@ client.on("message", function(message) {
                     .setTitle('Resultados da pesquisa:')
                     .setDescription('video sobre ' + message.content.substring(7, message.content.length).replace(/ /g, " "))
                     .setImage(thumb[0].src)
-                    .addFields({ name: contentTitle[0].textContent, value: link[0].href })
+                    .addField(contentTitle[0].textContent, link[0].href)
 
                 message.channel.send({ embeds: [videoEmbed] });
             }
@@ -235,11 +235,11 @@ client.on("message", function(message) {
                     .addFields({ name: "-----------------------------", value: "1-" }, { name: res1.title, value: res1.snippet }, { name: "Link:", value: res1.link })
                     .addFields({ name: "-----------------------------", value: "2-" }, { name: res2.title, value: res2.snippet }, { name: "Link:", value: res2.link })
                     .addFields({ name: "-----------------------------", value: images_results[0].title })
-
-                .setImage(images_results[0].thumbnail)
+                    .addFields({ name: '-----------------------------', value: '1-', inline: true }, { name: '-----------------------------', value: '2-', inline: true }, { name: '\u200B', value: '\u200B' }, { name: res1.title, value: res1.snippet, inline: true }, { name: res2.title, value: res2.snippet, inline: true }, { name: '\u200B', value: '\u200B' }, { name: 'Link:', value: res1.link, inline: true }, { name: "Link:", value: res2.link, inline: true }, { name: "-----------------------------", value: images_results[0].title })
+                    .setImage(images_results[0].thumbnail)
                     .setTimestamp()
 
-                message.channel.send({ embeds: [videoEmbed] });
+                message.channel.send({ embeds: [googleEmbed] });
 
             });
 
