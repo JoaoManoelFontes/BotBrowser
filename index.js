@@ -30,7 +30,7 @@ client.once('ready', () => {
 });
 
 
-client.on("message", function(message) {
+client.on("messageCreate", function(message) {
     if (message.author.bot) return;
 
     //mensagem de error automatizada
@@ -181,7 +181,8 @@ client.on("message", function(message) {
                     //embed personalizada do yt
                     const videoEmbed = new MessageEmbed()
                         .setColor('#FF0000')
-                        .setAuthor({ name: 'Youtube', iconURL: 'https://img2.gratispng.com/20180330/iyw/kisspng-youtube-red-logo-computer-icons-youtube-5abe39fec046a9.7547336915224161267876.jpg', url: 'https://www.youtube.com/' }).setTitle('Resultados da pesquisa:')
+                        .setAuthor({ name: 'Youtube', iconURL: 'https://img2.gratispng.com/20180330/iyw/kisspng-youtube-red-logo-computer-icons-youtube-5abe39fec046a9.7547336915224161267876.jpg', url: 'https://www.youtube.com/' })
+                        .setTitle('Resultados da pesquisa:')
                         .setDescription('video sobre ' + message.content.substring(7, message.content.length).replace(/ /g, " "))
                         .setImage(thumb[0].src)
                         .addField(
@@ -199,7 +200,7 @@ client.on("message", function(message) {
 
                 const videoEmbed = new MessageEmbed()
                     .setColor('#202A54')
-                    .setAuthor('Site desconhecido')
+                    .setAuthor({ name: 'Site desconhecido' })
                     .setTitle('Resultados da pesquisa:')
                     .setDescription('video sobre ' + message.content.substring(7, message.content.length).replace(/ /g, " "))
                     .setImage(thumb[0].src)
@@ -222,25 +223,25 @@ client.on("message", function(message) {
 
             //pegando os dados do google images pela api
             search.json(params.image, (dataImg) => {
-
                 const [res1, res2] = dataSearch.organic_results;
+                message.reply(res1.title)
                 const { images_results } = dataImg;
+                /*
+                                    const googleEmbed = new MessageEmbed()
 
-                const googleEmbed = new MessageEmbed()
+                                    .setColor('#4285f4')
+                                        .setTitle('Google - ' + params.search.q)
+                                        .setURL('https://www.google.com/search?q=' + message.content.substring(7, message.content.length).replace(/ /g, "+"))
+                                        .setAuthor({ name: 'Google', iconURL: 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', url: 'https://google.com.br' })
+                                        .addFields({ name: "1-" + res1.title, value: res1.snippet, inline: true }, { name: 'Link:', value: res1.link, inline: true })
+                                        .addField({ name: '\u200B', value: '\u200B' })
+                                        .addFields({ name: "2-" + res2.title, value: res2.snippet, inline: true }, { name: " || Link:", value: " || " + res2.link, inline: true })
+                                        .addField({ name: "-----------------------------", value: images_results[0].title })
+                                        .setImage(images_results[0].thumbnail)
+                                        .setTimestamp()
 
-                .setColor('#4285f4')
-                    .setTitle('Google - ' + params.search.q)
-                    .setURL('https://www.google.com/search?q=' + message.content.substring(7, message.content.length).replace(/ /g, "+"))
-                    .setAuthor('Google', 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', 'https://google.com.br')
-                    .addFields({ name: "-----------------------------", value: "1-" }, { name: res1.title, value: res1.snippet }, { name: "Link:", value: res1.link })
-                    .addFields({ name: "-----------------------------", value: "2-" }, { name: res2.title, value: res2.snippet }, { name: "Link:", value: res2.link })
-                    .addFields({ name: "-----------------------------", value: images_results[0].title })
-                    .addFields({ name: '-----------------------------', value: '1-', inline: true }, { name: '-----------------------------', value: '2-', inline: true }, { name: '\u200B', value: '\u200B' }, { name: res1.title, value: res1.snippet, inline: true }, { name: res2.title, value: res2.snippet, inline: true }, { name: '\u200B', value: '\u200B' }, { name: 'Link:', value: res1.link, inline: true }, { name: "Link:", value: res2.link, inline: true }, { name: "-----------------------------", value: images_results[0].title })
-                    .setImage(images_results[0].thumbnail)
-                    .setTimestamp()
-
-                message.channel.send({ embeds: [googleEmbed] });
-
+                                    message.channel.send({ embeds: [googleEmbed] });
+                                    */
             });
 
         });
