@@ -3,7 +3,6 @@ const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require('discord.js');
 const config = require("./config.json");
 const params = require('./params.json');
-const webScrapper = require('./webScrapper')
 
 const axios = require('axios');
 
@@ -217,18 +216,39 @@ client.on("messageCreate", function(message) {
     } else if (command === "google") {
 
         const req = message.content.substring(8, message.content.length);
-        message.channel.send({ embeds: [webScrapper.GoogleSearch(req)] });
-        /* new MessageEmbed()
-             .setColor('#4285f4')
-             .setTitle('Google - ' + req)
-             .setURL('https://www.google.com/search?q=' + message.content.substring(7, message.content.length).replace(/ /g, "+"))
-             .setAuthor({ name: 'Google', iconURL: 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', url: 'https://google.com.br' })
-             .addFields({ name: "1-" + res1.title, value: res1.snippet, inline: true }, { name: 'Link:', value: res1.link, inline: true })
-             .addField({ name: '\u200B', value: '\u200B' })
-             .addFields({ name: "2-" + res2.title, value: res2.snippet, inline: true }, { name: " || Link:", value: " || " + res2.link, inline: true })
-             .addField({ name: "-----------------------------", value: images_results[0].title })
-             .setImage(images_results[0].thumbnail)
-             .setTimestamp()*/
+        params.search.q = req;
+        params.image.q = req;
+
+        search.json(params.search, (dataSearch) => {
+
+            search.json(params.image, (dataImg) => {
+
+                const [res1, res2] = dataSearch.organic_results;
+                const { images_results } = dataImg;
+                console.log(res1.link, res1.title, res1.snippet);
+                console.log(res2.link, res2.title, res2.snippet);
+
+                message.channel.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#4285f4')
+                        .setTitle('Google - ' + req)
+                        .setURL('https://www.google.com/search?q=' + req.replace(/ /g, "+"))
+                        .setAuthor({ name: 'Google', iconURL: 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', url: 'https://google.com.br' })
+                        .addFields({ name: "1-" + res1.title, value: res1.link }, { name: res1.snippet, value: '\u200B' }, { name: "2-" + res2.title, value: res2.link }, { name: res2.snippet, value: '\u200B' }, )
+                        .addField("-----------------------------", images_results[0].title)
+                        .setImage(images_results[0].thumbnail)
+                        .setTimestamp()
+                    ]
+                });
+            });
+
+
+        });
+
+
+
+
 
 
     } else if (command === "sort") { //sorteia qualquer quantidade de números, palavras ou pessoas... 
