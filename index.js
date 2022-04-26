@@ -1,16 +1,17 @@
 //modules
 const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require('discord.js');
+
 const config = require("./config.json");
 const params = require('./params.json');
-
+const getRandomInt = require('./sort');
+const webScrapper = require('./webScrapper');
 const axios = require('axios');
 
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
 const SerpApi = require('google-search-results-nodejs');
-const { cleanLogs } = require("forever/lib/forever/cli");
 const search = new SerpApi.GoogleSearch("5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1");
 
 const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }, {
@@ -138,6 +139,7 @@ client.on("messageCreate", function(message) {
                         .setTimestamp()
 
                     message.channel.send({ embeds: [searchEmbed] });
+                    //se não tiver nenhuma imagem
                 } else {
 
                     const searchEmbed = new MessageEmbed()
@@ -263,17 +265,22 @@ client.on("messageCreate", function(message) {
         }
 
     } else if (command === "prob") { //o bot sorteia a probabilidade de acontecer uma sentença que o usuário digitar
+        /*
+                if (args.length <= 1) {
+                    errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
+                    message.channel.send({ embeds: [errorEmbed] });
+                } else {
 
-        if (args.length <= 1) {
-            errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
-            message.channel.send({ embeds: [errorEmbed] });
-        } else {
+                    const probability = getRandomInt(0, 100)
+                    message.reply(`chance de ` + probability + `%`)
 
-            const probability = getRandomInt(0, 100)
-            message.reply(`chance de ` + probability + `%`)
-
+                }
+        */
+        async function sla() {
+            const sla = await webScrapper.yahooSearch("neymar")
+            console.log(sla);
         }
-
+        sla();
     }
     //menu de comandos
     else if (command === "comandos") {
