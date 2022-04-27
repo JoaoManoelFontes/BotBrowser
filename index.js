@@ -3,16 +3,8 @@ const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require('discord.js');
 
 const config = require("./config.json");
-const params = require('./params.json');
 const getRandomInt = require('./sort');
-const webScrapper = require('./webScrapper');
-const axios = require('axios');
-
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
-
-const SerpApi = require('google-search-results-nodejs');
-const search = new SerpApi.GoogleSearch("5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1");
+const webScraper = require('./webScraper');
 
 const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }, {
     presence: {
@@ -46,7 +38,7 @@ client.on("messageCreate", function(message) {
 
 
     if (command === "src") {
-        webScrapper.yahooSearch(message.content.substring(5, message.content.length).replace(/ /g, "+")).then((query) => {
+        webScraper.yahooSearch(message.content.substring(5, message.content.length).replace(/ /g, "+")).then((query) => {
             message.channel.send({ embeds: [query] })
         })
 
@@ -110,7 +102,7 @@ client.on("messageCreate", function(message) {
 
     } else if (command === "google") {
 
-        webScrapper.GoogleSearch(message.content.substring(8, message.content.length)).then((query) => {
+        webScraper.GoogleSearch(message.content.substring(8, message.content.length)).then((query) => {
             message.channel.send({ embeds: [query] })
         })
 
