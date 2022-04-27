@@ -46,115 +46,8 @@ client.on("messageCreate", function(message) {
 
 
     if (command === "src") {
-
-        axios({
-            url: "https://br.search.yahoo.com/search?p=" + message.content.substring(5, message.content.length).replace(/ /g, "+")
-        }).then((result) => {
-
-            //cortando o html da página para conseguir apenas os links e imagens necessários
-            const found = (result.data.match(/<ol class=" reg searchCenterMiddle">.+<\/ol/))
-            const dom = new JSDOM(found)
-
-            //pegando os resultados da pesquisa - links e imagens
-            const searchLink = (dom.window.document.getElementsByTagName('a'));
-            const domImg = (dom.window.document.getElementsByTagName('img'));
-
-            let imgFound = [];
-            let imgTxt = [];
-
-            const useless = []
-            const res = []
-            const resText = []
-
-            // removendo os links "desnecessários" para sua pesquisa
-            for (var i = 0; i <= searchLink.length - 1; i++) {
-
-                if (searchLink[i].href.startsWith('https://br.search.yahoo.com/')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://br.images.search.yahoo.com/search')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://br.news.search.yahoo.com/search')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://br.video.search.yahoo.com/search')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://cc.bingj.com/cache')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://br.ajuda.yahoo.com/')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://r.search.yahoo.com/')) {
-                    useless.push(searchLink[i].href)
-
-                } else if (searchLink[i].href.startsWith('https://esportes.yahoo.com/noticias/')) {
-                    useless.push(searchLink[i].href)
-
-                } else {
-                    res.push(searchLink[i].href)
-                    resText.push(searchLink[i].text)
-                }
-            }
-
-            //eliminando os gifs da variavel que armazena as imagens
-            for (let index = 0; index < domImg.length - 1; index++) {
-
-                if (domImg[index].src.startsWith("https://")) {
-                    imgFound.push(domImg[index].src)
-                    imgTxt.push(domImg[index].title)
-                }
-
-            }
-
-
-            // caso não tenha um resumo abaixo do link
-            for (var i = 0; i <= resText.length - 1; i++) {
-                if (resText[i] === "") {
-                    resText.splice(i, 1, "esse site não apresenta nenhum resumo")
-                }
-            }
-
-            //se não for possível achar os links referentes à pesquisa
-            if (res[0] === undefined) {
-
-                errorEmbed.addFields({ name: "erro!", value: "não foi possível encontrar resultados para essa pesquisa" }, )
-                message.channel.send({ embeds: [errorEmbed] });
-
-            } else {
-
-                //se tiver uma imagem sobre a pesquisa na página em questão
-                if (imgFound.length > 0) {
-
-                    const searchEmbed = new MessageEmbed()
-
-                    .setColor('#4B0082')
-                        .setTitle('Resultados da pesquisa')
-                        .setDescription('resultados sobre ' + message.content.substring(5, message.content.length).replace(/ /g, " "))
-                        .addFields({ name: res[0], value: resText[0] }, { name: res[1], value: resText[1] })
-                        .addFields({ name: "imagem sobre " + message.content.substring(5, message.content.length).replace(/ /g, " "), value: imgTxt[0] })
-                        .setImage(imgFound[0])
-                        .setTimestamp()
-
-                    message.channel.send({ embeds: [searchEmbed] });
-                    //se não tiver nenhuma imagem
-                } else {
-
-                    const searchEmbed = new MessageEmbed()
-                        .setColor('#4B0082')
-                        .setTitle('Resultados da pesquisa')
-                        .setDescription('resultados sobre ' + message.content.substring(5, message.content.length).replace(/ /g, " "))
-                        .addFields({ name: res[0], value: resText[0] }, { name: res[1], value: resText[1] })
-                        .setTimestamp()
-
-                    message.channel.send({ embeds: [searchEmbed] });
-                }
-            }
-
-        }).catch((error) => {
-            console.log(error)
+        webScrapper.yahooSearch(message.content.substring(5, message.content.length).replace(/ /g, "+")).then((query) => {
+            message.channel.send({ embeds: [query] })
         })
 
     } else if (command === "watch") {
@@ -217,41 +110,9 @@ client.on("messageCreate", function(message) {
 
     } else if (command === "google") {
 
-        const req = message.content.substring(8, message.content.length);
-        params.search.q = req;
-        params.image.q = req;
-
-        search.json(params.search, (dataSearch) => {
-
-            search.json(params.image, (dataImg) => {
-
-                const [res1, res2] = dataSearch.organic_results;
-                const { images_results } = dataImg;
-                console.log(res1.link, res1.title, res1.snippet);
-                console.log(res2.link, res2.title, res2.snippet);
-
-                message.channel.send({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#4285f4')
-                        .setTitle('Google - ' + req)
-                        .setURL('https://www.google.com/search?q=' + req.replace(/ /g, "+"))
-                        .setAuthor({ name: 'Google', iconURL: 'https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png', url: 'https://google.com.br' })
-                        .addFields({ name: "1-" + res1.title, value: res1.link }, { name: res1.snippet, value: '\u200B' }, { name: "2-" + res2.title, value: res2.link }, { name: res2.snippet, value: '\u200B' }, )
-                        .addField("-----------------------------", images_results[0].title)
-                        .setImage(images_results[0].thumbnail)
-                        .setTimestamp()
-                    ]
-                });
-            });
-
-
-        });
-
-
-
-
-
+        webScrapper.GoogleSearch(message.content.substring(8, message.content.length)).then((query) => {
+            message.channel.send({ embeds: [query] })
+        })
 
     } else if (command === "sort") { //sorteia qualquer quantidade de números, palavras ou pessoas... 
 
@@ -265,22 +126,17 @@ client.on("messageCreate", function(message) {
         }
 
     } else if (command === "prob") { //o bot sorteia a probabilidade de acontecer uma sentença que o usuário digitar
-        /*
-                if (args.length <= 1) {
-                    errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
-                    message.channel.send({ embeds: [errorEmbed] });
-                } else {
 
-                    const probability = getRandomInt(0, 100)
-                    message.reply(`chance de ` + probability + `%`)
+        if (args.length <= 1) {
+            errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
+            message.channel.send({ embeds: [errorEmbed] });
+        } else {
 
-                }
-        */
-        async function sla() {
-            const sla = await webScrapper.yahooSearch("neymar")
-            console.log(sla);
+            const probability = getRandomInt(0, 100)
+            message.reply(`chance de ` + probability + `%`)
+
         }
-        sla();
+
     }
     //menu de comandos
     else if (command === "comandos") {
