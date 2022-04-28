@@ -120,7 +120,7 @@ client.on("messageCreate", function(message) {
     } else if (command === "prob") { //o bot sorteia a probabilidade de acontecer uma sentença que o usuário digitar
 
         if (args.length <= 1) {
-            errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
+            errorEmbed.addField('O Botnão pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
             message.channel.send({ embeds: [errorEmbed] });
         } else {
 
