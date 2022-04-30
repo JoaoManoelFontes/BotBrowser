@@ -3,7 +3,6 @@ const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require('discord.js');
 
 const config = require("./config.json");
-const getRandomInt = require('./sort');
 const webScraper = require('./webScraper');
 
 const client = new Discord.Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] }, {
@@ -105,29 +104,6 @@ client.on("messageCreate", function(message) {
         webScraper.GoogleSearch(message.content.substring(8, message.content.length)).then((query) => {
             message.channel.send({ embeds: [query] })
         })
-
-    } else if (command === "sort") { //sorteia qualquer quantidade de números, palavras ou pessoas... 
-
-        if (args.length <= 1) { //se o usuário digitar só um item (ou nenhum) e não tiver como sortear 
-            errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite 2 ou mais itens', true)
-            message.channel.send({ embeds: [errorEmbed] });
-        } else {
-            const random = getRandomInt(0, args.length)
-            message.reply("o item sorteado é " + args[random])
-
-        }
-
-    } else if (command === "prob") { //o bot sorteia a probabilidade de acontecer uma sentença que o usuário digitar
-
-        if (args.length <= 1) {
-            errorEmbed.addField('O Bot não pôde reconhecer a sua mensagem', 'Digite uma palavra ou uma sentença ', true)
-            message.channel.send({ embeds: [errorEmbed] });
-        } else {
-
-            const probability = getRandomInt(0, 100)
-            message.reply(`chance de ` + probability + `%`)
-
-        }
 
     }
     //menu de comandos
