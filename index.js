@@ -1,7 +1,7 @@
 //modules
 const Discord = require("discord.js");
 const { Intents, MessageEmbed } = require("discord.js");
-
+console.log("manu");
 const config = require("./config.json");
 const axios = require("axios");
 const { JSDOM } = require("jsdom");
