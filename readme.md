@@ -1,4 +1,4 @@
-<<h1 align="center">Bot Browser</h1>
+<h1 align="center">Bot Browser</h1>
 <h3 align="center">Bot do discord que tem a função de fazer a pesquisa em um browser por você </h3>
 <br/>
 <br/>
