@@ -1,190 +1,169 @@
-const params = require("./params.json");
+const puppeteer = require("puppeteer");
 
-const { EmbedBuilder } = require("discord.js");
+// ? Google search
+// (async () => {
+//   browser = await puppeteer.launch({ headless: false });
+//   const [page] = await browser.pages();
+//   await page.setRequestInterception(true);
+//   page.on("request", (request) => {
+//     request.resourceType() === "document"
+//       ? request.continue()
+//       : request.abort();
+//   });
+//   await page.goto("https://www.google.com/search?q=neymar+idade", {
+//     waitUntil: "domcontentloaded",
+//   });
+//   await page.waitForSelector(".LC20lb", { visible: true });
+//   const searchResults = await page.$$eval(".LC20lb", (els) =>
+//     els.map((e) => ({ title: e.innerText, link: e.parentNode.href }))
+//   );
 
-const axios = require("axios");
+//   console.log(searchResults[0]);
+// })().catch((err) => console.error(err));
 
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
+// ? Google embeds - firsts responses (unfinished)
+// try {
+//   const res = await page.evaluate(() => {
+//     return document.querySelector('[data-attrid="kc:/people/person:age"]')
+//       .innerText;
+//   });
 
-const SerpApi = require("google-search-results-nodejs");
-const search = new SerpApi.GoogleSearch(
-  "5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1"
-);
+//   console.log(res);
+// } catch (error) {}
 
-module.exports = {
-  async yahooSearch(req) {
-    return new Promise((resolve, reject) => {
-      axios({
-        url: "https://br.search.yahoo.com/search?p=" + req,
-      })
-        .then((result) => {
-          //cortando o html da página para conseguir apenas os links e imagens necessários
-          const found = result.data.match(
-            /<ol class=" reg searchCenterMiddle">.+<\/ol/
-          );
-          const dom = new JSDOM(found);
+// ? Github repos
+// (async () => {
+//   browser = await puppeteer.launch({ headless: false });
+//   const page = await browser.newPage();
+//   await page.goto("https://github.com/search?q=bot");
 
-          //pegando os resultados da pesquisa - links e imagens
-          const searchLink = dom.window.document.getElementsByTagName("a");
-          const domImg = dom.window.document.getElementsByTagName("img");
+//   const data = await page.evaluate(() => {
+//     let list = document.querySelectorAll("[class='repo-list'] > li");
+//     let resData = [];
 
-          let imgFound = [];
-          let imgTxt = [];
+//     for (let i = 0; i < list.length; i++) {
+//       let desc = "";
+//       let title = "";
+//       let tagList = [];
+//       let url = list.item(i).querySelector("a.v-align-middle").href;
 
-          const useless = [];
-          const res = [];
-          const resText = [];
+//       // ? title scrapping
+//       try {
+//         title = list
+//           .item(i)
+//           .querySelector('[class="v-align-middle"]').innerText;
+//       } catch (error) {
+//         title = null;
+//       }
 
-          // removendo os links "desnecessários" para sua pesquisa
-          for (var i = 0; i <= searchLink.length - 1; i++) {
-            if (searchLink[i].href.startsWith("https://br.search.yahoo.com/")) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith(
-                "https://br.images.search.yahoo.com/search"
-              )
-            ) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith(
-                "https://br.news.search.yahoo.com/search"
-              )
-            ) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith(
-                "https://br.video.search.yahoo.com/search"
-              )
-            ) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith("https://cc.bingj.com/cache")
-            ) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith("https://br.ajuda.yahoo.com/")
-            ) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith("https://r.search.yahoo.com/")
-            ) {
-              useless.push(searchLink[i].href);
-            } else if (
-              searchLink[i].href.startsWith(
-                "https://esportes.yahoo.com/noticias/"
-              )
-            ) {
-              useless.push(searchLink[i].href);
-            } else {
-              res.push(searchLink[i].href);
-              resText.push(searchLink[i].text);
-            }
-          }
+//       // ? description scrapping
+//       try {
+//         desc = list
+//           .item(i)
+//           .querySelector(
+//             '[class="mt-n1 flex-auto"] > [class="mb-1"]'
+//           ).innerText;
+//       } catch (error) {
+//         desc = null;
+//       }
 
-          //eliminando os gifs da variavel que armazena as imagens
-          for (let index = 0; index < domImg.length - 1; index++) {
-            if (domImg[index].src.startsWith("https://")) {
-              imgFound.push(domImg[index].src);
-              imgTxt.push(domImg[index].title);
-            }
-          }
+//       // ? tags scrapping
+//       try {
+//         let tags = list
+//           .item(i)
+//           .querySelectorAll('[data-ga-click="Topic, search results"]');
 
-          // caso não tenha um resumo abaixo do link
-          for (var i = 0; i <= resText.length - 1; i++) {
-            if (resText[i] === "") {
-              resText.splice(i, 1, "esse site não apresenta nenhum resumo");
-            }
-          }
-          if (res[0] === undefined || res[0] === null || res[0] === "") {
-            const errorEmbed = new EmbedBuilder()
-              .setColor("#3C4043")
-              .setTitle("Erro!")
-              .setTimestamp()
-              .addFields({
-                name: "erro!",
-                value:
-                  "não foi possível encontrar resultados para essa pesquisa",
-              });
+//         for (let aux = 0; aux < tags.length; aux++) {
+//           tagList.push(tags.item(aux).innerText);
+//         }
+//       } catch (error) {
+//         tagList = null;
+//       }
 
-            resolve(errorEmbed);
-          } else {
-            //se tiver uma imagem sobre a pesquisa na página em questão
-            if (imgFound.length > 0) {
-              const searchEmbed = new EmbedBuilder()
+//       // ? Building response data
+//       resData.push({
+//         title: title,
+//         desc: desc,
+//         tags: tagList,
+//         url: url,
+//       });
+//     }
+//     return resData;
+//   });
 
-                .setColor("#4B0082")
-                .setTitle("Resultados da pesquisa")
-                .setDescription("resultados sobre " + req.replace("+", " "))
-                .addFields(
-                  { name: res[0], value: resText[0] },
-                  { name: res[1], value: resText[1] }
-                )
-                .addFields({
-                  name: "imagem sobre " + req.replace("+", " "),
-                  value: imgTxt[0],
-                })
-                .setImage(imgFound[0])
-                .setTimestamp();
+//   console.log(data);
 
-              resolve(searchEmbed);
-              //se não tiver nenhuma imagem
-            } else {
-              const searchEmbed = new EmbedBuilder()
-                .setColor("#4B0082")
-                .setTitle("Resultados da pesquisa")
-                .setDescription("resultados sobre " + req.replace("+", " "))
-                .addFields(
-                  { name: res[0], value: resText[0] },
-                  { name: res[1], value: resText[1] }
-                )
-                .setTimestamp();
+//   await browser.close();
+// })().catch((err) => console.error(err));
 
-              resolve(searchEmbed);
-            }
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    });
-  },
-  async GoogleSearch(req) {
-    return new Promise((resolve, reject) => {
-      params.search.q = req;
-      params.image.q = req;
+// ? Movies search - IMDB || Rotten
+// (async () => {
+//   browser = await puppeteer.launch({ headless: true });
+//   const page = await browser.newPage();
+//   await page.goto("https://www.imdb.com/chart/top/?ref_=nv_mv_250");
 
-      search.json(params.search, (dataSearch) => {
-        search.json(params.image, (dataImg) => {
-          const [res1, res2] = dataSearch.organic_results;
-          const { images_results } = dataImg;
+//   const data = await page.evaluate(() => {
+//     let tableItem = document
+//       .querySelector("table[data-caller-name='chart-top250movie']")
+//       .querySelectorAll("tbody > tr");
 
-          const query = new EmbedBuilder()
-            .setColor("#4285f4")
-            .setTitle("Google - " + req)
-            .setURL("https://www.google.com/search?q=" + req.replace(/ /g, "+"))
-            .setAuthor({
-              name: "Google",
-              iconURL:
-                "https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png",
-              url: "https://google.com.br",
-            })
-            .addFields(
-              { name: "1-" + res1.title, value: res1.link },
-              { name: res1.snippet, value: "\u200B" },
-              { name: "2-" + res2.title, value: res2.link },
-              { name: res2.snippet, value: "\u200B" }
-            )
-            .addFields({
-              name: "-----------------------------",
-              value: images_results[0].title,
-              inline: true,
-            })
-            .setImage(images_results[0].thumbnail)
-            .setTimestamp();
-          resolve(query);
-        });
-      });
-    });
-  },
-};
+//     let resData = [];
+
+//     for (let i = 0; i < 10; i++) {
+//       resData.push({
+//         title: tableItem.item(i).querySelector("td.titleColumn > a").innerText,
+//         desc: tableItem.item(i).querySelector("td.titleColumn > a").title,
+//         rating: tableItem
+//           .item(i)
+//           .querySelector("td[class='ratingColumn imdbRating']").innerText,
+//         url: tableItem.item(i).querySelector("td.titleColumn > a").href,
+//       });
+//     }
+
+//     return resData;
+//   });
+
+//   console.log(data);
+//   await browser.close();
+// })().catch((err) => console.error(err));
+
+(async () => {
+  browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto("https://www.rottentomatoes.com/m/the_batman");
+
+  const data = await page.evaluate(() => {
+    let content = document.querySelector(
+      "div[class='panel-body content_body']"
+    );
+
+    let list = content.querySelectorAll("ul[class='content-meta info'] > li");
+
+    let movieInfos = [
+      content.querySelector(
+        "div[class='movie_synopsis clamp clamp-6 js-clamp']"
+      ).innerText,
+    ];
+
+    for (let i = 0; i < list.length; i++) {
+      movieInfos.push(list.item(i).innerText.replace("\t", ""));
+    }
+
+    let resData = {
+      movieInfos: movieInfos,
+    };
+
+    return resData;
+  });
+
+  console.log(data);
+  await browser.close();
+})().catch((err) => console.error(err));
+
+// ? Letras_mus
+
+// ? Google maps
+
+// ? Google shopping
+
+// ? Football championships classifications - ge.globo

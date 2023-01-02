@@ -8,10 +8,12 @@ const {
 } = require("discord.js");
 
 const { BOT_TOKEN, prefix } = require("./config.json");
-const axios = require("axios");
-const { JSDOM } = require("jsdom");
-const webScraper = require("./webScraper");
 
+const { yahooSearch } = require("./webScraper/yahooSearch");
+const { GoogleSearch } = require("./webScraper/googleSearch");
+const { videoSearch } = require("./webScraper/videoSearch");
+
+// Client
 const client = new Client({
   intents: [
     GatewayIntentBits.DirectMessages,
@@ -23,6 +25,7 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
+// Event on ready
 client.once("ready", () => {
   client.user.setPresence({
     activities: [{ name: `Wandinha`, type: ActivityType.Watching }],
@@ -37,109 +40,34 @@ client.once("ready", () => {
   );
 });
 
+// Event on message
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
+  // ? Transformando a mensagem em um array
   const commandBody = message.content.slice(prefix.length);
   const args = commandBody.split(" ");
   const command = args.shift().toLowerCase();
 
   if (command === "src") {
-    webScraper
-      .yahooSearch(
-        message.content.substring(5, message.content.length).replace(/ /g, "+")
-      )
-      .then((query) => {
-        message.channel.send({ embeds: [query] });
-      });
+    yahooSearch(
+      message.content.substring(5, message.content.length).replace(/ /g, "+")
+    ).then((embed) => {
+      message.channel.send({ embeds: [embed] });
+    });
   } else if (command === "watch") {
-    axios({
-      url:
-        "https://br.video.search.yahoo.com/search/video;_ylt=A2KLfRhB7upgluUATjPz6Qt.;_ylu=Y29sbwNiZjEEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=" +
-        message.content.substring(7, message.content.length).replace(/ /g, "+"),
-    })
-      .then((result) => {
-        const videoFound = result.data.match(/<ol><li class="vr vres">.+<\/ol/);
-        const videoDom = new JSDOM(videoFound);
-        const link = videoDom.window.document.getElementsByTagName("a");
-        const thumb = videoDom.window.document.getElementsByTagName("img");
-        const contentTitle =
-          videoDom.window.document.getElementsByTagName("h3");
-        const contentTime =
-          videoDom.window.document.getElementsByClassName("v-time");
-
-        //caso o vídeo for do YouTube
-        if (link[0].href.startsWith("/video/play?p")) {
-          //vai no link do video pelo Yahoo e pega o link do video no YouTube
-          axios({
-            url: "https://br.video.search.yahoo.com/" + link[0].href,
-          })
-            .then((result) => {
-              const yt = new JSDOM(result.data);
-              const watchInYt =
-                yt.window.document.getElementsByClassName("url");
-
-              //embed personalizada do yt
-              const videoEmbed = new EmbedBuilder()
-                .setColor("#FF0000")
-                .setAuthor({
-                  name: "Youtube",
-                  iconURL:
-                    "https://img2.gratispng.com/20180330/iyw/kisspng-youtube-red-logo-computer-icons-youtube-5abe39fec046a9.7547336915224161267876.jpg",
-                  url: "https://www.youtube.com/",
-                })
-                .setTitle("Resultados da pesquisa:")
-                .setDescription(
-                  "video sobre " +
-                    message.content
-                      .substring(7, message.content.length)
-                      .replace(/ /g, " ")
-                )
-                .setImage(thumb[0].src)
-                .addFields({
-                  name: contentTitle[0].textContent,
-                  value: watchInYt[0].href,
-                  inline: true,
-                });
-              message.channel.send({ embeds: [videoEmbed] });
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-          // se for um video de outro site desconhecido
-        } else {
-          const videoEmbed = new EmbedBuilder()
-            .setColor("#202A54")
-            .setAuthor({ name: "Site desconhecido" })
-            .setTitle("Resultados da pesquisa:")
-            .setDescription(
-              "video sobre " +
-                message.content
-                  .substring(7, message.content.length)
-                  .replace(/ /g, " ")
-            )
-            .setImage(thumb[0].src)
-            .addFields({
-              name: contentTitle[0].textContent,
-              value: link[0].href,
-              inline: true,
-            });
-
-          message.channel.send({ embeds: [videoEmbed] });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    videoSearch(message).then((embed) => {
+      message.channel.send({ embeds: [embed] });
+    });
   } else if (command === "google") {
-    webScraper
-      .GoogleSearch(message.content.substring(8, message.content.length))
-      .then((query) => {
-        message.channel.send({ embeds: [query] });
-      });
+    GoogleSearch(message.content.substring(8, message.content.length)).then(
+      (embed) => {
+        message.channel.send({ embeds: [embed] });
+      }
+    );
   }
-  //menu de comandos
+
+  // ? menu de comandos
   else if (command === "comandos") {
     const commandEmbed = new EmbedBuilder()
 
