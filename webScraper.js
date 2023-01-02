@@ -146,7 +146,7 @@ const puppeteer = require("puppeteer");
     ];
 
     for (let i = 0; i < list.length; i++) {
-      movieInfos.push(list.item(i).innerText.replace("\t", ""));
+      movieInfos.push(list.item(i).innerText.replaceAll("\t", ""));
     }
 
     let resData = {
