@@ -1,0 +1,30 @@
+{
+  "name": "project-botbrowser",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">Bot Browser</h1> <h3 align=\"center\">Bot do discord que tem a função de fazer a pesquisa em um browser por você </h3> <br/> <br/> <br/> <p align=\"center\">Funções:</p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./webScraper.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoaoManoelFontes/Project-BotBrowser.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoaoManoelFontes/Project-BotBrowser/issues"
+  },
+  "homepage": "https://github.com/JoaoManoelFontes/Project-BotBrowser#readme",
+  "dependencies": {
+    "axios": "^1.2.1",
+    "discord.js": "^14.7.1",
+    "google-scraper": "^1.1.2",
+    "google-search-results-nodejs": "^2.1.0",
+    "jsdom": "^20.0.3",
+    "nodemon": "^2.0.20",
+    "puppeteer": "^19.4.0"
+  }
+}
