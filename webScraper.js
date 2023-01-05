@@ -98,8 +98,9 @@ const puppeteer = require("puppeteer");
 
 // ? Movies search - IMDB || Rotten
 // (async () => {
-//   browser = await puppeteer.launch({ headless: true });
+//   browser = await puppeteer.launch({ headless: false });
 //   const page = await browser.newPage();
+//   // Lista dos melhores filmes do imdb
 //   await page.goto("https://www.imdb.com/chart/top/?ref_=nv_mv_250");
 
 //   const data = await page.evaluate(() => {
@@ -110,6 +111,7 @@ const puppeteer = require("puppeteer");
 //     let resData = [];
 
 //     for (let i = 0; i < 10; i++) {
+//       // scraping de cada filme da lista
 //       resData.push({
 //         title: tableItem.item(i).querySelector("td.titleColumn > a").innerText,
 //         desc: tableItem.item(i).querySelector("td.titleColumn > a").title,
@@ -117,6 +119,7 @@ const puppeteer = require("puppeteer");
 //           .item(i)
 //           .querySelector("td[class='ratingColumn imdbRating']").innerText,
 //         url: tableItem.item(i).querySelector("td.titleColumn > a").href,
+//         thumb: tableItem.item(i).querySelector("td.posterColumn > a > img").src,
 //       });
 //     }
 
@@ -127,38 +130,51 @@ const puppeteer = require("puppeteer");
 //   await browser.close();
 // })().catch((err) => console.error(err));
 
-(async () => {
-  browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto("https://www.rottentomatoes.com/m/the_batman");
+// (async () => {
+//   browser = await puppeteer.launch({ headless: false });
+//   const page = await browser.newPage();
+//   await page.goto("https://www.rottentomatoes.com/search?search=the+batman");
 
-  const data = await page.evaluate(() => {
-    let content = document.querySelector(
-      "div[class='panel-body content_body']"
-    );
+// Clicar no primeiro filme do resultado da pesquisa
+//   await page.click(
+//     'search-page-result[type="movie"]>ul>search-page-media-row>a'
+//   );
 
-    let list = content.querySelectorAll("ul[class='content-meta info'] > li");
+//   await page.waitForSelector("ul[class='content-meta info'] > li");
 
-    let movieInfos = [
-      content.querySelector(
-        "div[class='movie_synopsis clamp clamp-6 js-clamp']"
-      ).innerText,
-    ];
+//   const data = await page.evaluate(() => {
+//     let content = document.querySelector(
+//       "div[class='panel-body content_body']"
+//     );
 
-    for (let i = 0; i < list.length; i++) {
-      movieInfos.push(list.item(i).innerText.replaceAll("\t", ""));
-    }
+//     let list = content.querySelectorAll("ul[class='content-meta info'] > li");
 
-    let resData = {
-      movieInfos: movieInfos,
-    };
+// Scraping do filme da pesquisa
+//     let movieInfos = [
+//       content.querySelector(
+//         "div[class='movie_synopsis clamp clamp-6 js-clamp']"
+//       ).innerText,
+//     ];
 
-    return resData;
-  });
+//     for (let i = 0; i < list.length; i++) {
+//       movieInfos.push(list.item(i).innerText.replaceAll("\t", ""));
+//     }
 
-  console.log(data);
-  await browser.close();
-})().catch((err) => console.error(err));
+//     let resData = {
+//       movieInfos: movieInfos,
+//     };
+
+//     let thumb = document.querySelector(
+//       'div[class="thumbnail-scoreboard-wrap"]'
+//     );
+//     resData["thumb"] = thumb.querySelector("img").src;
+
+//     return resData;
+//   });
+
+//   console.log(data);
+//   // await browser.close();
+// })().catch((err) => console.error(err));
 
 // ? Letras_mus
 
