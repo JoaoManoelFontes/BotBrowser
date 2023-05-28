@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 
 // ? Google search
 // (async () => {
-//   browser = await puppeteer.launch({ headless: false });
+//   browser = await puppeteer.launch({ headless: true });
 //   const [page] = await browser.pages();
 //   await page.setRequestInterception(true);
 //   page.on("request", (request) => {
@@ -10,30 +10,71 @@ const puppeteer = require("puppeteer");
 //       ? request.continue()
 //       : request.abort();
 //   });
-//   await page.goto("https://www.google.com/search?q=neymar+idade", {
-//     waitUntil: "domcontentloaded",
-//   });
+//   await page.goto(
+//     "https://www.google.com/search?q=quanto+tempo+durou+a+idade+média",
+//     {
+//       waitUntil: "domcontentloaded",
+//     }
+//   );
+//   const data = {};
+
 //   await page.waitForSelector(".LC20lb", { visible: true });
-//   const searchResults = await page.$$eval(".LC20lb", (els) =>
+//   data["firstsResponses"] = await page.$$eval(".LC20lb", (els) =>
 //     els.map((e) => ({ title: e.innerText, link: e.parentNode.href }))
 //   );
 
-//   console.log(searchResults[0]);
+//   try {
+//     data["aboutEmbed"] = await page.evaluate(() => {
+//       const main = document.querySelector(
+//         "div[class='TQc1id IVvPP Jb0Zif rhstc4']"
+//       );
+//       const desc = main.querySelector(
+//         'div[class="B03h3d V14nKc i8qq8b ptcLIOszQJu__wholepage-card wp-ms"]'
+//       );
+//       return desc.querySelector('div[class="kno-rdesc"] > span').innerText;
+//     });
+//   } catch (error) {}
+
+//   try {
+//     data["infoEmbed"] = await page.evaluate(() => {
+//       return document
+//         .querySelector('div[class="yp1CPe wDYxhc NFQFxe viOShc LKPcQc"]')
+//         .innerText.replaceAll("\n", ", ");
+//     });
+//   } catch (error) {}
+
+//   try {
+//     data["ageEmbed"] = await page.evaluate(() => {
+//       return document
+//         .querySelector('[data-attrid="kc:/people/person:age"]')
+//         .innerText.replaceAll("\n", ", ");
+//     });
+//   } catch (error) {}
+
+//   try {
+//     data["sideInfoEmbed"] = await page.evaluate(() => {
+//       const main = document.querySelector(
+//         'div[class="kp-wholepage kp-wholepage-osrp HSryR EyBRub"]'
+//       );
+
+//       let response = {
+//         title: main.querySelector('h2[data-attrid="title"').innerText,
+//         description: main
+//           .querySelector('div[data-attrid="description"]')
+//           .querySelector("span").innerText,
+//       };
+
+//       return response;
+//     });
+//   } catch (error) {}
+
+//   console.log(data);
+//   await browser.close();
 // })().catch((err) => console.error(err));
-
-// ? Google embeds - firsts responses (unfinished)
-// try {
-//   const res = await page.evaluate(() => {
-//     return document.querySelector('[data-attrid="kc:/people/person:age"]')
-//       .innerText;
-//   });
-
-//   console.log(res);
-// } catch (error) {}
 
 // ? Github repos
 // (async () => {
-//   browser = await puppeteer.launch({ headless: false });
+//   browser = await puppeteer.launch({ headless: true });
 //   const page = await browser.newPage();
 //   await page.goto("https://github.com/search?q=bot");
 
@@ -133,13 +174,16 @@ const puppeteer = require("puppeteer");
 // (async () => {
 //   browser = await puppeteer.launch({ headless: false });
 //   const page = await browser.newPage();
-//   await page.goto("https://www.rottentomatoes.com/search?search=the+batman");
+//   await page.goto(
+//     "https://www.rottentomatoes.com/search?search=godfather+part+2"
+//   );
 
-// Clicar no primeiro filme do resultado da pesquisa
+//   // ? Clicar no primeiro filme do resultado da pesquisa
 //   await page.click(
 //     'search-page-result[type="movie"]>ul>search-page-media-row>a'
 //   );
 
+//   await page.waitForSelector("h1[slot='title']");
 //   await page.waitForSelector("ul[class='content-meta info'] > li");
 
 //   const data = await page.evaluate(() => {
@@ -147,9 +191,11 @@ const puppeteer = require("puppeteer");
 //       "div[class='panel-body content_body']"
 //     );
 
+//     let title = document.querySelector("h1[slot='title']").innerText;
+
 //     let list = content.querySelectorAll("ul[class='content-meta info'] > li");
 
-// Scraping do filme da pesquisa
+//     // ? Scraping do filme da pesquisa
 //     let movieInfos = [
 //       content.querySelector(
 //         "div[class='movie_synopsis clamp clamp-6 js-clamp']"
@@ -161,7 +207,8 @@ const puppeteer = require("puppeteer");
 //     }
 
 //     let resData = {
-//       movieInfos: movieInfos,
+//       title,
+//       movieInfos,
 //     };
 
 //     let thumb = document.querySelector(
@@ -173,13 +220,113 @@ const puppeteer = require("puppeteer");
 //   });
 
 //   console.log(data);
-//   // await browser.close();
+//   await browser.close();
 // })().catch((err) => console.error(err));
 
 // ? Letras_mus
+// (async () => {
+//   browser = await puppeteer.launch({ headless: true });
+//   const page = await browser.newPage();
+//   await page.goto("http://www.letras.mus.br/?q=te%20liberando");
+//   await page.waitForSelector("div[class='gsc-results gsc-webResult']");
+
+//   // ? Clicar no primeiro filme do resultado da pesquisa
+//   await page.click('div [class="gs-webResult gs-result"] > div > div > a');
+
+//   await page.waitForSelector("article");
+//   //   await page.waitForSelector("ul[class='content-meta info'] > li");
+
+//   const data = await page.evaluate(() => {
+//     return document.querySelector('div [class="cnt-letra"]').innerText;
+//   });
+
+//   console.log(data);
+//   await browser.close();
+// })().catch((err) => console.error(err));
 
 // ? Google maps
+(async () => {
+  browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto("https://www.google.com.br/maps/search/Sushi+Mossoró");
 
+  await page.waitForSelector("img[decoding='async']");
+
+  const data = await page.evaluate(() => {
+    let name_list = document.querySelectorAll("div.qBF1Pd.fontHeadlineSmall");
+    let address_list = document.querySelectorAll("div[class='W4Efsd']");
+    let name_data = [];
+    let address_data = [];
+
+    //?Nomes dos locais
+    for (let i = 0; i < name_list.length; i++) {
+      name_data.push(name_list.item(i).innerText);
+    }
+    //?Endereços
+    for (let i = 2; i < address_list.length; i += 4) {
+      address_data.push(address_list.item(i).innerText);
+    }
+
+    return [name_data, address_data];
+  });
+
+  for (let i = 0; i < data[0].length; i++) {
+    console.log(data[0][i], " - ", data[1][i]);
+  }
+
+  await page.screenshot({
+    path: "screenshot.jpg",
+    fullPage: true,
+  });
+
+  await page.waitForSelector(
+    "div[class='gYkzb'] > button[aria-label='Recolher painel lateral']"
+  );
+  await page.click(
+    "div[class='gYkzb'] > button[aria-label='Recolher painel lateral']"
+  );
+
+  await page.screenshot({
+    path: "screenshot2.jpg",
+    fullPage: true,
+  });
+  await browser.close();
+})().catch((err) => console.error(err));
 // ? Google shopping
+
+// (async () => {
+//   browser = await puppeteer.launch({ headless: false });
+//   const page = await browser.newPage();
+//   await page.goto(
+//     "https://www.google.com/search?q=camisa+do+flamengo&tbm=shop"
+//   );
+
+//   await page.waitForSelector(
+//     'div [class="sh-pr__product-results-grid sh-pr__product-results"]'
+//   );
+
+//   const data = await page.evaluate(() => {
+//     const main = document.querySelector(
+//       'div [class="sh-pr__product-results-grid sh-pr__product-results"]'
+//     );
+//     const list = main.querySelectorAll(
+//       'div[class="sh-dgr__gr-auto sh-dgr__grid-result"]'
+//     );
+//     const resData = [];
+
+//     for (let i = 0; i < list.length; i++) {
+//       resData.push({
+//         title: list.item(i).querySelector("span > a h3").innerText,
+//         img: list.item(i).querySelector("img").src,
+//         price: list.item(0).querySelector('div [class="zLPF4b"] ').innerText,
+//       });
+//     }
+
+//     return resData;
+//   });
+
+//   console.log(data);
+//   // await browser.close();
+// })().catch((err) => console.error(err));
 
 // ? Football championships classifications - ge.globo

@@ -1,4 +1,6 @@
 //modules
+require('dotenv').config()
+
 const {
   Client,
   GatewayIntentBits,
@@ -7,7 +9,7 @@ const {
   ActivityType,
 } = require("discord.js");
 
-const { BOT_TOKEN, prefix } = require("./config.json");
+const prefix = "!";
 
 const { yahooSearch } = require("./webScraper/yahooSearch");
 const { GoogleSearch } = require("./webScraper/googleSearch");
@@ -107,4 +109,4 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-client.login(BOT_TOKEN);
+client.login(process.env.BOT_TOKEN);
