@@ -12,8 +12,9 @@ const {
 const prefix = "!";
 
 const { yahooSearch } = require("./webScraper/yahooSearch");
-const { GoogleSearch } = require("./webScraper/googleSearch");
+const { googleSearch } = require("./webScraper/googleSearch");
 const { videoSearch } = require("./webScraper/videoSearch");
+const { gitHubUserSearch } = require('./webScraper/githubSearch');
 
 // Client
 const client = new Client({
@@ -30,7 +31,7 @@ const client = new Client({
 // Event on ready
 client.once("ready", () => {
   client.user.setPresence({
-    activities: [{ name: `Wandinha`, type: ActivityType.Watching }],
+    activities: [{ name: `Barbie`, type: ActivityType.Watching }],
   });
 
   console.log(
@@ -56,17 +57,17 @@ client.on("messageCreate", async (message) => {
       message.content.substring(5, message.content.length).replace(/ /g, "+")
     ).then((embed) => {
       message.channel.send({ embeds: [embed] });
-    });
+    }).catch((err) => console.log(err));
   } else if (command === "watch") {
     videoSearch(message).then((embed) => {
       message.channel.send({ embeds: [embed] });
     });
   } else if (command === "google") {
-    GoogleSearch(message.content.substring(8, message.content.length)).then(
-      (embed) => {
-        message.channel.send({ embeds: [embed] });
-      }
-    );
+    const embed = await googleSearch(message.content.substring(8, message.content.length));
+    message.channel.send({ embeds: [embed] });
+  } else if (command === "github") {
+    const embed = await gitHubUserSearch(message.content.substring(8, message.content.length));
+    message.channel.send({ embeds: [embed] });
   }
 
   // ? menu de comandos
@@ -83,14 +84,14 @@ client.on("messageCreate", async (message) => {
       .setDescription("todos os comandos do bot aqui")
       .addFields(
         { name: "prefix: ", value: "!", inline: true },
-        { name: "library: ", value: "discord.js", inline: true },
+        { name: "made in: ", value: "2020", inline: true },
         { name: "version: ", value: "1.5.0", inline: true }
       )
       .addFields(
         {
           name: "google",
           value:
-            "Api da serp que retorna os resultados de qualquer pesquisa no google. Apenas 100 pesquisas por mês são permitidas",
+            "Retorna os resultados de qualquer pesquisa no google. Assim como informações do google sobre a pesquisa (ex: idade, altura, etc)",
         },
         {
           name: "src",
@@ -101,6 +102,10 @@ client.on("messageCreate", async (message) => {
           name: "watch",
           value:
             "O bot retorna o primeiro resultado da sua pesquisa no Yahoo Videos, que geralmente é um vídeo do YouTube, por isso a mensagem personalizada",
+        },
+        {
+          name: "github",
+          value: "O bot retorna informações sobre o usuário do github pesquisado, além dos principais repositórios (pinned repos).",
         }
       )
       .setTimestamp();

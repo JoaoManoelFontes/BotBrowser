@@ -1,49 +1,103 @@
-const params = require("../params.json");
-
+const puppeteer = require("puppeteer");
 const { EmbedBuilder } = require("discord.js");
 
-const SerpApi = require("google-search-results-nodejs");
-const search = new SerpApi.GoogleSearch(
-  "5071d41195f23d47c5f858e033fea43c87852bb4f955ad61ceaadf651a3367c1"
-);
 
-module.exports = {
-  async GoogleSearch(req) {
-    return new Promise((resolve, reject) => {
-      params.search.q = req;
-      params.image.q = req;
+async function googleSearch(message) {
+  browser = await puppeteer.launch({ headless: true });
+  const [page] = await browser.pages();
+  await page.setRequestInterception(true);
+  page.on("request", (request) => {
+    request.resourceType() === "document"
+      ? request.continue()
+      : request.abort();
+  });
+  await page.goto(
+    `https://www.google.com/search?q=${message.replace(/ /g, "+")}`,
+    {
+      waitUntil: "domcontentloaded",
+    }
+  );
+  const data = {};
 
-      search.json(params.search, (dataSearch) => {
-        search.json(params.image, (dataImg) => {
-          const [res1, res2] = dataSearch.organic_results;
-          const { images_results } = dataImg;
+  await page.waitForSelector(".LC20lb", { visible: true });
+  data["firstsResponses"] = await page.$$eval(".LC20lb", (els) =>
+    els.map((e) => ({ title: e.innerText, link: e.parentNode.href }))
+  );
 
-          const query = new EmbedBuilder()
-            .setColor("#4285f4")
-            .setTitle("Google - " + req)
-            .setURL("https://www.google.com/search?q=" + req.replace(/ /g, "+"))
-            .setAuthor({
-              name: "Google",
-              iconURL:
-                "https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png",
-              url: "https://google.com.br",
-            })
-            .addFields(
-              { name: "1-" + res1.title, value: res1.link },
-              { name: res1.snippet, value: "\u200B" },
-              { name: "2-" + res2.title, value: res2.link },
-              { name: res2.snippet, value: "\u200B" }
-            )
-            .addFields({
-              name: "-----------------------------",
-              value: images_results[0].title,
-              inline: true,
-            })
-            .setImage(images_results[0].thumbnail)
-            .setTimestamp();
-          resolve(query);
-        });
-      });
+  const query = new EmbedBuilder()
+    .setColor("#4285f4")
+    .setTitle("Google - " + message)
+    .setURL("https://www.google.com/search?q=" + message.replace(/ /g, "+"))
+    .setAuthor({
+        name: "Google",
+        iconURL:
+          "https://w7.pngwing.com/pngs/557/90/png-transparent-google-logo-g-suite-google-text-logo-business-thumbnail.png",
+        url: "https://google.com.br",
+        })
+        .setTimestamp();
+
+  try {
+    data["aboutEmbed"] = await page.evaluate(() => {
+      const main = document.querySelector(
+        "div[class='TQc1id IVvPP Jb0Zif rhstc4']"
+      );
+      const desc = main.querySelector(
+        'div[class="B03h3d V14nKc i8qq8b ptcLIOszQJu__wholepage-card wp-ms"]'
+      );
+      return desc.querySelector('div[class="kno-rdesc"] > span').innerText;
     });
-  },
-};
+
+    query.addFields({ name: "Sobre: ", value: "\n" + data.aboutEmbed });
+
+  } catch (error) {}
+
+  try {
+    data["infoEmbed"] = await page.evaluate(() => {
+      return document
+        .querySelector('div[class="yp1CPe wDYxhc NFQFxe viOShc LKPcQc"]')
+        .innerText.replaceAll("\n", ", ");
+    });
+    query.addFields({name: "\n", value: data.infoEmbed.slice(0, 200)+"..."});
+
+  } catch (error) {}
+
+  try {
+    data["ageEmbed"] = await page.evaluate(() => {
+      return document
+        .querySelector('[data-attrid="kc:/people/person:age"]')
+        .innerText.replaceAll("\n", ", ");
+    });
+
+    query.addFields({name: `Idade:`, value:  "\n" + data.ageEmbed});
+  } catch (error) {}
+
+  try {
+    data["sideInfoEmbed"] = await page.evaluate(() => {
+      const main = document.querySelector(
+        'div[class="kp-wholepage kp-wholepage-osrp HSryR EyBRub"]'
+      );
+
+      let response = {
+        title: main.querySelector('h2[data-attrid="title"').innerText,
+        description: main
+          .querySelector('div[data-attrid="description"]')
+          .querySelector("span").innerText,
+      };
+
+      return response;
+    });
+
+    query.addFields({name: `Informações: ${data.sideInfoEmbed.title }`, value:  "\n" + data.sideInfoEmbed.description});
+
+  } catch (error) {}
+  await browser.close();  
+
+  data["firstsResponses"].slice(0,5).map((e, index) => {
+    query.addFields({ name: `${index+1} - ` +  e.title, value: e.link+ "\n" });
+  })
+
+  return query;
+}
+
+
+module.exports = { googleSearch };

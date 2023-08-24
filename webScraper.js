@@ -1,3 +1,4 @@
+const { default: axios } = require("axios");
 const puppeteer = require("puppeteer");
 
 // ? Google search
@@ -11,7 +12,7 @@ const puppeteer = require("puppeteer");
 //       : request.abort();
 //   });
 //   await page.goto(
-//     "https://www.google.com/search?q=quanto+tempo+durou+a+idade+média",
+//     "https://www.google.com/search?q=flamengo",
 //     {
 //       waitUntil: "domcontentloaded",
 //     }
@@ -74,67 +75,69 @@ const puppeteer = require("puppeteer");
 
 // ? Github repos
 // (async () => {
-//   browser = await puppeteer.launch({ headless: true });
-//   const page = await browser.newPage();
-//   await page.goto("https://github.com/search?q=bot");
+  // browser = await puppeteer.launch({ headless: true });
+  // const page = await browser.newPage();
+  // await page.goto("https://github.com/search?q=bot");
 
-//   const data = await page.evaluate(() => {
-//     let list = document.querySelectorAll("[class='repo-list'] > li");
-//     let resData = [];
+  // const data = await page.evaluate(() => {
+  //   let list = document.querySelectorAll("[class='repo-list'] > li");
+  //   let resData = [];
 
-//     for (let i = 0; i < list.length; i++) {
-//       let desc = "";
-//       let title = "";
-//       let tagList = [];
-//       let url = list.item(i).querySelector("a.v-align-middle").href;
+  //   for (let i = 0; i < list.length; i++) {
+  //     let desc = "";
+  //     let title = "";
+  //     let tagList = [];
+  //     let url = list.item(i).querySelector("a.v-align-middle").href;
 
-//       // ? title scrapping
-//       try {
-//         title = list
-//           .item(i)
-//           .querySelector('[class="v-align-middle"]').innerText;
-//       } catch (error) {
-//         title = null;
-//       }
+  //     // ? title scrapping
+  //     try {
+  //       title = list
+  //         .item(i)
+  //         .querySelector('[class="v-align-middle"]').innerText;
+  //     } catch (error) {
+  //       title = null;
+  //     }
 
-//       // ? description scrapping
-//       try {
-//         desc = list
-//           .item(i)
-//           .querySelector(
-//             '[class="mt-n1 flex-auto"] > [class="mb-1"]'
-//           ).innerText;
-//       } catch (error) {
-//         desc = null;
-//       }
+  //     // ? description scrapping
+  //     try {
+  //       desc = list
+  //         .item(i)
+  //         .querySelector(
+  //           '[class="mt-n1 flex-auto"] > [class="mb-1"]'
+  //         ).innerText;
+  //     } catch (error) {
+  //       desc = null;
+  //     }
 
-//       // ? tags scrapping
-//       try {
-//         let tags = list
-//           .item(i)
-//           .querySelectorAll('[data-ga-click="Topic, search results"]');
+  //     // ? tags scrapping
+  //     try {
+  //       let tags = list
+  //         .item(i)
+  //         .querySelectorAll('[data-ga-click="Topic, search results"]');
 
-//         for (let aux = 0; aux < tags.length; aux++) {
-//           tagList.push(tags.item(aux).innerText);
-//         }
-//       } catch (error) {
-//         tagList = null;
-//       }
+  //       for (let aux = 0; aux < tags.length; aux++) {
+  //         tagList.push(tags.item(aux).innerText);
+  //       }
+  //     } catch (error) {
+  //       tagList = null;
+  //     }
 
-//       // ? Building response data
-//       resData.push({
-//         title: title,
-//         desc: desc,
-//         tags: tagList,
-//         url: url,
-//       });
-//     }
-//     return resData;
-//   });
+  //     // ? Building response data
+  //     resData.push({
+  //       title: title,
+  //       desc: desc,
+  //       tags: tagList,
+  //       url: url,
+  //     });
+  //   }
+  //   return resData;
+  // });
 
+  // console.log(data);
+
+  // await browser.close();
+//   const {data} = await axios.get("https://gh-pinned-repos.egoist.dev/?username=JoaoManoelFontes");
 //   console.log(data);
-
-//   await browser.close();
 // })().catch((err) => console.error(err));
 
 // ? Movies search - IMDB || Rotten
@@ -224,75 +227,75 @@ const puppeteer = require("puppeteer");
 // })().catch((err) => console.error(err));
 
 // ? Letras_mus
-// (async () => {
-//   browser = await puppeteer.launch({ headless: true });
-//   const page = await browser.newPage();
-//   await page.goto("http://www.letras.mus.br/?q=te%20liberando");
-//   await page.waitForSelector("div[class='gsc-results gsc-webResult']");
-
-//   // ? Clicar no primeiro filme do resultado da pesquisa
-//   await page.click('div [class="gs-webResult gs-result"] > div > div > a');
-
-//   await page.waitForSelector("article");
-//   //   await page.waitForSelector("ul[class='content-meta info'] > li");
-
-//   const data = await page.evaluate(() => {
-//     return document.querySelector('div [class="cnt-letra"]').innerText;
-//   });
-
-//   console.log(data);
-//   await browser.close();
-// })().catch((err) => console.error(err));
-
-// ? Google maps
 (async () => {
   browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
-  await page.goto("https://www.google.com.br/maps/search/Sushi+Mossoró");
+  await page.goto("http://www.letras.mus.br/?q=te%20liberando");
+  await page.waitForSelector("div[class='gsc-results gsc-webResult']");
 
-  await page.waitForSelector("img[decoding='async']");
+  // ? Clicar no primeiro filme do resultado da pesquisa
+  await page.click('div [class="gs-webResult gs-result"] > div > div > a');
+
+  await page.waitForSelector("article");
+  //   await page.waitForSelector("ul[class='content-meta info'] > li");
 
   const data = await page.evaluate(() => {
-    let name_list = document.querySelectorAll("div.qBF1Pd.fontHeadlineSmall");
-    let address_list = document.querySelectorAll("div[class='W4Efsd']");
-    let name_data = [];
-    let address_data = [];
-
-    //?Nomes dos locais
-    for (let i = 0; i < name_list.length; i++) {
-      name_data.push(name_list.item(i).innerText);
-    }
-    //?Endereços
-    for (let i = 2; i < address_list.length; i += 4) {
-      address_data.push(address_list.item(i).innerText);
-    }
-
-    return [name_data, address_data];
+    return document.querySelector('div [class="cnt-letra"]').innerText;
   });
 
-  for (let i = 0; i < data[0].length; i++) {
-    console.log(data[0][i], " - ", data[1][i]);
-  }
-
-  await page.screenshot({
-    path: "screenshot.jpg",
-    fullPage: true,
-  });
-
-  await page.waitForSelector(
-    "div[class='gYkzb'] > button[aria-label='Recolher painel lateral']"
-  );
-  await page.click(
-    "div[class='gYkzb'] > button[aria-label='Recolher painel lateral']"
-  );
-
-  await page.screenshot({
-    path: "screenshot2.jpg",
-    fullPage: true,
-  });
+  console.log(data);
   await browser.close();
 })().catch((err) => console.error(err));
-// ? Google shopping
+
+// ? Google maps
+// (async () => {
+//   browser = await puppeteer.launch({ headless: true });
+//   const page = await browser.newPage();
+//   await page.goto("https://www.google.com.br/maps/search/Sushi+Mossoró");
+
+//   await page.waitForSelector("img[decoding='async']");
+
+//   const data = await page.evaluate(() => {
+//     let name_list = document.querySelectorAll("div.qBF1Pd.fontHeadlineSmall");
+//     let address_list = document.querySelectorAll("div[class='W4Efsd']");
+//     let name_data = [];
+//     let address_data = [];
+
+//     //?Nomes dos locais
+//     for (let i = 0; i < name_list.length; i++) {
+//       name_data.push(name_list.item(i).innerText);
+//     }
+//     //?Endereços
+//     for (let i = 2; i < address_list.length; i += 4) {
+//       address_data.push(address_list.item(i).innerText);
+//     }
+
+//     return [name_data, address_data];
+//   });
+
+//   for (let i = 0; i < data[0].length; i++) {
+//     console.log(data[0][i], " - ", data[1][i]);
+//   }
+
+//   await page.screenshot({
+//     path: "screenshot.jpg",
+//     fullPage: true,
+//   });
+
+//   await page.waitForSelector(
+//     "div[class='gYkzb'] > button[aria-label='Recolher painel lateral']"
+//   );
+//   await page.click(
+//     "div[class='gYkzb'] > button[aria-label='Recolher painel lateral']"
+//   );
+
+//   await page.screenshot({
+//     path: "screenshot2.jpg",
+//     fullPage: true,
+//   });
+//   await browser.close();
+// })().catch((err) => console.error(err));
+// // ? Google shopping
 
 // (async () => {
 //   browser = await puppeteer.launch({ headless: false });
@@ -330,3 +333,41 @@ const puppeteer = require("puppeteer");
 // })().catch((err) => console.error(err));
 
 // ? Football championships classifications - ge.globo
+// async GoogleSearch(req) {
+//   return new Promise((resolve, reject) => {
+//     params.search.q = req;
+//     params.image.q = req;
+
+//     search.json(params.search, (dataSearch) => {
+//       search.json(params.image, (dataImg) => {
+//         const [res1, res2] = dataSearch.organic_results;
+//         const { images_results } = dataImg;
+
+//         const query = new EmbedBuilder()
+//           .setColor("#4285f4")
+//           .setTitle("Google - " + req)
+//           .setURL("https://www.google.com/search?q=" + req.replace(/ /g, "+"))
+//           .setAuthor({
+//             name: "Google",
+//             iconURL:
+//               "https://w7.pngwing.com/pngs/249/19/png-transparent-google-logo-g-suite-google-guava-google-plus-company-text-logo-thumbnail.png",
+//             url: "https://google.com.br",
+//           })
+//           .addFields(
+//             { name: "1-" + res1.title, value: res1.link },
+//             { name: res1.snippet, value: "\u200B" },
+//             { name: "2-" + res2.title, value: res2.link },
+//             { name: res2.snippet, value: "\u200B" }
+//           )
+//           .addFields({
+//             name: "-----------------------------",
+//             value: images_results[0].title,
+//             inline: true,
+//           })
+//           .setImage(images_results[0].thumbnail)
+//           .setTimestamp();
+//         resolve(query);
+//       });
+//     });
+//   });
+// },
