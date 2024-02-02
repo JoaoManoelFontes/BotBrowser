@@ -75,67 +75,67 @@ const puppeteer = require("puppeteer");
 
 // ? Github repos
 // (async () => {
-  // browser = await puppeteer.launch({ headless: true });
-  // const page = await browser.newPage();
-  // await page.goto("https://github.com/search?q=bot");
+// browser = await puppeteer.launch({ headless: true });
+// const page = await browser.newPage();
+// await page.goto("https://github.com/search?q=bot");
 
-  // const data = await page.evaluate(() => {
-  //   let list = document.querySelectorAll("[class='repo-list'] > li");
-  //   let resData = [];
+// const data = await page.evaluate(() => {
+//   let list = document.querySelectorAll("[class='repo-list'] > li");
+//   let resData = [];
 
-  //   for (let i = 0; i < list.length; i++) {
-  //     let desc = "";
-  //     let title = "";
-  //     let tagList = [];
-  //     let url = list.item(i).querySelector("a.v-align-middle").href;
+//   for (let i = 0; i < list.length; i++) {
+//     let desc = "";
+//     let title = "";
+//     let tagList = [];
+//     let url = list.item(i).querySelector("a.v-align-middle").href;
 
-  //     // ? title scrapping
-  //     try {
-  //       title = list
-  //         .item(i)
-  //         .querySelector('[class="v-align-middle"]').innerText;
-  //     } catch (error) {
-  //       title = null;
-  //     }
+//     // ? title scrapping
+//     try {
+//       title = list
+//         .item(i)
+//         .querySelector('[class="v-align-middle"]').innerText;
+//     } catch (error) {
+//       title = null;
+//     }
 
-  //     // ? description scrapping
-  //     try {
-  //       desc = list
-  //         .item(i)
-  //         .querySelector(
-  //           '[class="mt-n1 flex-auto"] > [class="mb-1"]'
-  //         ).innerText;
-  //     } catch (error) {
-  //       desc = null;
-  //     }
+//     // ? description scrapping
+//     try {
+//       desc = list
+//         .item(i)
+//         .querySelector(
+//           '[class="mt-n1 flex-auto"] > [class="mb-1"]'
+//         ).innerText;
+//     } catch (error) {
+//       desc = null;
+//     }
 
-  //     // ? tags scrapping
-  //     try {
-  //       let tags = list
-  //         .item(i)
-  //         .querySelectorAll('[data-ga-click="Topic, search results"]');
+//     // ? tags scrapping
+//     try {
+//       let tags = list
+//         .item(i)
+//         .querySelectorAll('[data-ga-click="Topic, search results"]');
 
-  //       for (let aux = 0; aux < tags.length; aux++) {
-  //         tagList.push(tags.item(aux).innerText);
-  //       }
-  //     } catch (error) {
-  //       tagList = null;
-  //     }
+//       for (let aux = 0; aux < tags.length; aux++) {
+//         tagList.push(tags.item(aux).innerText);
+//       }
+//     } catch (error) {
+//       tagList = null;
+//     }
 
-  //     // ? Building response data
-  //     resData.push({
-  //       title: title,
-  //       desc: desc,
-  //       tags: tagList,
-  //       url: url,
-  //     });
-  //   }
-  //   return resData;
-  // });
+//     // ? Building response data
+//     resData.push({
+//       title: title,
+//       desc: desc,
+//       tags: tagList,
+//       url: url,
+//     });
+//   }
+//   return resData;
+// });
 
-  // console.log(data);
+// console.log(data);
 
-  // await browser.close();
+// await browser.close();
 //   const {data} = await axios.get("https://gh-pinned-repos.egoist.dev/?username=JoaoManoelFontes");
 //   console.log(data);
 // })().catch((err) => console.error(err));
@@ -227,25 +227,25 @@ const puppeteer = require("puppeteer");
 // })().catch((err) => console.error(err));
 
 // ? Letras_mus
-(async () => {
-  browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto("http://www.letras.mus.br/?q=te%20liberando");
-  await page.waitForSelector("div[class='gsc-results gsc-webResult']");
+// (async () => {
+//   browser = await puppeteer.launch({ headless: true });
+//   const page = await browser.newPage();
+//   await page.goto("http://www.letras.mus.br/?q=te%20liberando");
+//   await page.waitForSelector("div[class='gsc-results gsc-webResult']");
 
-  // ? Clicar no primeiro filme do resultado da pesquisa
-  await page.click('div [class="gs-webResult gs-result"] > div > div > a');
+//   // ? Clicar no primeiro filme do resultado da pesquisa
+//   await page.click('div [class="gs-webResult gs-result"] > div > div > a');
 
-  await page.waitForSelector("article");
-  //   await page.waitForSelector("ul[class='content-meta info'] > li");
+//   await page.waitForSelector("article");
+//   //   await page.waitForSelector("ul[class='content-meta info'] > li");
 
-  const data = await page.evaluate(() => {
-    return document.querySelector('div [class="cnt-letra"]').innerText;
-  });
+//   const data = await page.evaluate(() => {
+//     return document.querySelector('div [class="cnt-letra"]').innerText;
+//   });
 
-  console.log(data);
-  await browser.close();
-})().catch((err) => console.error(err));
+//   console.log(data);
+//   await browser.close();
+// })().catch((err) => console.error(err));
 
 // ? Google maps
 // (async () => {

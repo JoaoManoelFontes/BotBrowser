@@ -1,5 +1,5 @@
 //modules
-require('dotenv').config()
+require("dotenv").config();
 
 const {
   Client,
@@ -14,7 +14,7 @@ const prefix = "!";
 const { yahooSearch } = require("./webScraper/yahooSearch");
 const { googleSearch } = require("./webScraper/googleSearch");
 const { videoSearch } = require("./webScraper/videoSearch");
-const { gitHubUserSearch } = require('./webScraper/githubSearch');
+const { gitHubUserSearch } = require("./webScraper/githubSearch");
 
 // Client
 const client = new Client({
@@ -55,18 +55,24 @@ client.on("messageCreate", async (message) => {
   if (command === "src") {
     yahooSearch(
       message.content.substring(5, message.content.length).replace(/ /g, "+")
-    ).then((embed) => {
-      message.channel.send({ embeds: [embed] });
-    }).catch((err) => console.log(err));
+    )
+      .then((embed) => {
+        message.channel.send({ embeds: [embed] });
+      })
+      .catch((err) => console.log(err));
   } else if (command === "watch") {
     videoSearch(message).then((embed) => {
       message.channel.send({ embeds: [embed] });
     });
   } else if (command === "google") {
-    const embed = await googleSearch(message.content.substring(8, message.content.length));
+    const embed = await googleSearch(
+      message.content.substring(8, message.content.length)
+    );
     message.channel.send({ embeds: [embed] });
   } else if (command === "github") {
-    const embed = await gitHubUserSearch(message.content.substring(8, message.content.length));
+    const embed = await gitHubUserSearch(
+      message.content.substring(8, message.content.length)
+    );
     message.channel.send({ embeds: [embed] });
   }
 
@@ -105,7 +111,8 @@ client.on("messageCreate", async (message) => {
         },
         {
           name: "github",
-          value: "O bot retorna informações sobre o usuário do github pesquisado, além dos principais repositórios (pinned repos).",
+          value:
+            "O bot retorna informações sobre o usuário do github pesquisado, além dos principais repositórios (pinned repos).",
         }
       )
       .setTimestamp();

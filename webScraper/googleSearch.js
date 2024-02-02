@@ -1,7 +1,6 @@
 const puppeteer = require("puppeteer");
 const { EmbedBuilder } = require("discord.js");
 
-
 async function googleSearch(message) {
   browser = await puppeteer.launch({ headless: true });
   const [page] = await browser.pages();
@@ -29,12 +28,12 @@ async function googleSearch(message) {
     .setTitle("Google - " + message)
     .setURL("https://www.google.com/search?q=" + message.replace(/ /g, "+"))
     .setAuthor({
-        name: "Google",
-        iconURL:
-          "https://w7.pngwing.com/pngs/557/90/png-transparent-google-logo-g-suite-google-text-logo-business-thumbnail.png",
-        url: "https://google.com.br",
-        })
-        .setTimestamp();
+      name: "Google",
+      iconURL:
+        "https://w7.pngwing.com/pngs/557/90/png-transparent-google-logo-g-suite-google-text-logo-business-thumbnail.png",
+      url: "https://google.com.br",
+    })
+    .setTimestamp();
 
   try {
     data["aboutEmbed"] = await page.evaluate(() => {
@@ -48,27 +47,27 @@ async function googleSearch(message) {
     });
 
     query.addFields({ name: "Sobre: ", value: "\n" + data.aboutEmbed });
-
   } catch (error) {}
 
   try {
     data["infoEmbed"] = await page.evaluate(() => {
-      return document
-        .querySelector('div[class="yp1CPe wDYxhc NFQFxe viOShc LKPcQc"]')
-        .innerText.replaceAll("\n", ", ");
+      return document.querySelector(
+        'div[class="yp1CPe wDYxhc NFQFxe viOShc LKPcQc"]'
+      ).innerText;
     });
-    query.addFields({name: "\n", value: data.infoEmbed.slice(0, 200)+"..."});
-
+    query.addFields({
+      name: "\n",
+      value: data.infoEmbed.slice(0, 200) + "...",
+    });
   } catch (error) {}
 
   try {
     data["ageEmbed"] = await page.evaluate(() => {
-      return document
-        .querySelector('[data-attrid="kc:/people/person:age"]')
-        .innerText.replaceAll("\n", ", ");
+      return document.querySelector('[data-attrid="kc:/people/person:age"]')
+        .innerText;
     });
 
-    query.addFields({name: `Idade:`, value:  "\n" + data.ageEmbed});
+    query.addFields({ name: `Idade:`, value: "\n" + data.ageEmbed });
   } catch (error) {}
 
   try {
@@ -81,23 +80,28 @@ async function googleSearch(message) {
         title: main.querySelector('h2[data-attrid="title"').innerText,
         description: main
           .querySelector('div[data-attrid="description"]')
-          .querySelector("span").innerText,
+          .querySelector("span")
+          .innerText.replace("MAIS", "."),
       };
 
       return response;
     });
 
-    query.addFields({name: `Informações: ${data.sideInfoEmbed.title }`, value:  "\n" + data.sideInfoEmbed.description});
-
+    query.addFields({
+      name: `Informações: ${data.sideInfoEmbed.title}`,
+      value: "\n" + data.sideInfoEmbed.description,
+    });
   } catch (error) {}
-  await browser.close();  
+  await browser.close();
 
-  data["firstsResponses"].slice(0,5).map((e, index) => {
-    query.addFields({ name: `${index+1} - ` +  e.title, value: e.link+ "\n" });
-  })
+  data["firstsResponses"].slice(0, 5).map((e, index) => {
+    query.addFields({
+      name: `${index + 1} - ` + e.title,
+      value: e.link + "\n",
+    });
+  });
 
   return query;
 }
-
 
 module.exports = { googleSearch };
