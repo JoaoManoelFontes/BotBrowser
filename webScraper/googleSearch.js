@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const { EmbedBuilder } = require("discord.js");
 
 async function googleSearch(message) {
-  browser = await puppeteer.launch({ headless: true });
+  browser = await puppeteer.launch({ headless: "new" });
   const [page] = await browser.pages();
   await page.setRequestInterception(true);
   page.on("request", (request) => {
